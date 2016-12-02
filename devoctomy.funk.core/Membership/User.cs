@@ -73,7 +73,7 @@ namespace devoctomy.funk.core.Membership
                 if (await iStorage.Replace(this))
                 {
                     pULRResult.Success = true;
-                    pULRResult.SessionToken = new SessionToken();
+                    pULRResult.SessionToken = new SessionToken(RowKey);
                 }
             }
             return (pULRResult);
