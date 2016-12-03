@@ -20,6 +20,7 @@ namespace devoctomy.funk.core.tests
         private String cStrStorageRootURL = String.Empty;
         private String cStrConnectionString = String.Empty;
         private String cStrActivationCode = String.Empty;
+        private String cStrOTP = String.Empty;
 
         #endregion
 
@@ -37,6 +38,7 @@ namespace devoctomy.funk.core.tests
                 CryptographyHelpers.RandomString(12));
             cStrUserName = CryptographyHelpers.RandomString(12);
             cStrActivationCode = CryptographyHelpers.RandomString(6);
+            cStrOTP = CryptographyHelpers.RandomString(6);
         }
 
         #endregion
@@ -54,6 +56,8 @@ namespace devoctomy.funk.core.tests
         {
             await CreateUser();
             await ActivateUser();
+            await RandomiseOTP();
+            await VerifyOTP();
         }
 
         //[TestMethod]
@@ -75,6 +79,41 @@ namespace devoctomy.funk.core.tests
             if(pUsrUser != null)
             {
                 Assert.IsTrue(await pUsrUser.Activate(pStoStorage, cStrActivationCode));
+            }
+            else
+            {
+                Assert.Fail("Failed to get user '{0}' from storage.", cStrEmail);
+            }
+        }
+
+        //[TestMethod]
+        public async Task RandomiseOTP()
+        {
+            Storage pStoStorage = new Storage(cStrStorageRootURL,
+                "AzureWebJobsStorage");
+            User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
+            if (pUsrUser != null)
+            {
+                pUsrUser.OTP = cStrOTP;
+                pUsrUser.OTPRequestedAt = DateTime.UtcNow;
+                Assert.IsTrue(await pStoStorage.Replace(pUsrUser));
+            }
+            else
+            {
+                Assert.Fail("Failed to get user '{0}' from storage.", cStrEmail);
+            }
+        }
+
+        //[TestMethod]
+        public async Task VerifyOTP()
+        {
+            Storage pStoStorage = new Storage(cStrStorageRootURL,
+                "AzureWebJobsStorage");
+            User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
+            if (pUsrUser != null)
+            {
+                UserLoginResult pULRLogin = await pUsrUser.Login(pStoStorage, cStrOTP, new TimeSpan(0, 0, 30));
+                Assert.IsTrue(pULRLogin.Success);
             }
             else
             {
