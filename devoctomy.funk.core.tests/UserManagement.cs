@@ -54,20 +54,28 @@ namespace devoctomy.funk.core.tests
         [TestMethod]
         public async Task AllUserManagementTestsSequenced()
         {
-            await CreateUser();
+            await CreateUser(false);
+            await CreateUser(true);
             await ActivateUser();
             await RandomiseOTP();
             await VerifyOTP();
         }
 
         //[TestMethod]
-        public async Task CreateUser()
+        public async Task CreateUser(Boolean iFail)
         {
             Storage pStoStorage = new Storage(cStrStorageRootURL,
                 "AzureWebJobsStorage");
             User pUsrUser = new User(cStrEmail, cStrUserName, 6);
             pUsrUser.ActivationCode = cStrActivationCode;
-            Assert.IsTrue(await pUsrUser.Insert(pStoStorage));
+            if(iFail)
+            {
+                Assert.IsFalse(await pUsrUser.Insert(pStoStorage));
+            }
+            else
+            {
+                Assert.IsTrue(await pUsrUser.Insert(pStoStorage));
+            }
         }
 
         //[TestMethod]

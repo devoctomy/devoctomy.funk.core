@@ -174,16 +174,27 @@ namespace devoctomy.funk.core.Membership
             else
             {
                 TableOperation pTOnInsert = TableOperation.Insert(iUser);
-                TableResult pTRtResult = await UsersTable.ExecuteAsync(pTOnInsert);
-                switch (pTRtResult.HttpStatusCode)
+                TableResult pTRtResult;
+                try
                 {
-                    case 200:
-                    case 204:
-                        {
-                            return (true);
-                        }
+                    pTRtResult = await UsersTable.ExecuteAsync(pTOnInsert);
+                    switch (pTRtResult.HttpStatusCode)
+                    {
+                        case 200:
+                        case 204:
+                            {
+                                return (true);
+                            }
+                        default:
+                            {
+                                return (false);
+                            }
+                    }
                 }
-                return (false);
+                catch(Exception ex)
+                {
+                    return (false);
+                }
             }
         }
 
