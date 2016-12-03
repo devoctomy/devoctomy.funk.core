@@ -70,11 +70,11 @@ namespace devoctomy.funk.core.tests
             pUsrUser.ActivationCode = cStrActivationCode;
             if(iFail)
             {
-                Assert.IsFalse(await pUsrUser.Insert(pStoStorage));
+                Assert.IsFalse(await pUsrUser.InsertAsync(pStoStorage));
             }
             else
             {
-                Assert.IsTrue(await pUsrUser.Insert(pStoStorage));
+                Assert.IsTrue(await pUsrUser.InsertAsync(pStoStorage));
             }
         }
 

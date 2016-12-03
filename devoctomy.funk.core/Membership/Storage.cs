@@ -160,11 +160,11 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// Insert an instance of User into storage
+        /// Insert an instance of User into storage asynchronously
         /// </summary>
         /// <param name="iUser">The instance of user to insert</param>
         /// <returns>True if the insert was successful</returns>
-        public async Task<Boolean> InsertUser(User iUser)
+        public async Task<Boolean> InsertUserAsync(User iUser)
         {
             Boolean pBlnCreatedTable = await UsersTable.CreateIfNotExistsAsync();
             if (pBlnCreatedTable)
@@ -192,6 +192,45 @@ namespace devoctomy.funk.core.Membership
                     }
                 }
                 catch(Exception ex)
+                {
+                    return (false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Insert an instance of User into storage
+        /// </summary>
+        /// <param name="iUser">The instance of user to insert</param>
+        /// <returns>True if the insert was successful</returns>
+        public Boolean InsertUser(User iUser)
+        {
+            Boolean pBlnCreatedTable = UsersTable.CreateIfNotExists();
+            if (pBlnCreatedTable)
+            {
+                return (false);
+            }
+            else
+            {
+                TableOperation pTOnInsert = TableOperation.Insert(iUser);
+                TableResult pTRtResult;
+                try
+                {
+                    pTRtResult = UsersTable.Execute(pTOnInsert);
+                    switch (pTRtResult.HttpStatusCode)
+                    {
+                        case 200:
+                        case 204:
+                            {
+                                return (true);
+                            }
+                        default:
+                            {
+                                return (false);
+                            }
+                    }
+                }
+                catch (Exception ex)
                 {
                     return (false);
                 }
