@@ -60,13 +60,14 @@ namespace devoctomy.funk.core.Membership
         /// <param name="iEmail">Email address of the user to create, this must be unique</param>
         /// <param name="iUserName">Username of the user to create</param>
         public User(String iEmail, 
-            String iUserName)
+            String iUserName,
+            Int32 iActivationCodeLength)
         {
             CreatedAt = DateTime.UtcNow;
             RowKey = iEmail;
             PartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
             UserName = iUserName;
-            RandomiseActivationCode(6);
+            RandomiseActivationCode(iActivationCodeLength);
             Activated = false;
             OTPRequestedAt = DateTime.MinValue;
             OTP = string.Empty;

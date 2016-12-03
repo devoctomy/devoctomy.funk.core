@@ -89,11 +89,11 @@ namespace devoctomy.funk.core.Membership
         #region public methods
 
         /// <summary>
-        /// Get a user from storage by its email address
+        /// Get a user from storage by its email address asynchronously
         /// </summary>
         /// <param name="iEmail">Email address of the user to get</param>
         /// <returns>The required user, if found in storage, otherwise null</returns>
-        public async Task<User> GetUser(String iEmail)
+        public async Task<User> GetUserAsync(String iEmail)
         {
             String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
             Boolean pBlnCreatedTable = await UsersTable.CreateIfNotExistsAsync();
@@ -107,6 +107,35 @@ namespace devoctomy.funk.core.Membership
                 TableOperation operation = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
                 pTRtResult = UsersTable.Execute(operation);
                 switch(pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                        {
+                            return ((User)pTRtResult.Result);
+                        }
+                }
+                return (null);
+            }
+        }
+
+        /// <summary>
+        /// Get a user from storage by its email address
+        /// </summary>
+        /// <param name="iEmail">Email address of the user to get</param>
+        /// <returns>The required user, if found in storage, otherwise null</returns>
+        public User GetUser(String iEmail)
+        {
+            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
+            Boolean pBlnCreatedTable = UsersTable.CreateIfNotExists();
+            TableResult pTRtResult = new TableResult() { HttpStatusCode = 404 };
+            if (pBlnCreatedTable)
+            {
+                return (null);
+            }
+            else
+            {
+                TableOperation operation = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
+                pTRtResult = UsersTable.Execute(operation);
+                switch (pTRtResult.HttpStatusCode)
                 {
                     case 200:
                         {
