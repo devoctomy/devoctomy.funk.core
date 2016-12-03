@@ -4,6 +4,9 @@ using System.Linq;
 namespace devoctomy.funk.core
 {
 
+    /// <summary>
+    /// Helper functions for Azure table storage
+    /// </summary>
     public class AzureTableHelpers
     {
 

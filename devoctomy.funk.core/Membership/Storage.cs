@@ -8,6 +8,9 @@ using Microsoft.WindowsAzure.Storage.Table;
 namespace devoctomy.funk.core.Membership
 {
 
+    /// <summary>
+    /// Storage logic for the membership system
+    /// </summary>
     public class Storage
     {
 
@@ -22,26 +25,41 @@ namespace devoctomy.funk.core.Membership
 
         #region public properties
 
+        /// <summary>
+        /// Root url of the Azure storage account
+        /// </summary>
         public String RootURL
         {
             get { return (cStrRootURL); }
         }
         
+        /// <summary>
+        /// Connection string for the Azure storage account
+        /// </summary>
         public String ConnectionString
         {
             get { return (cStrConnectionString); }
         }
 
+        /// <summary>
+        /// Cloud storage account instance, initialised upon construction
+        /// </summary>
         public CloudStorageAccount Account
         {
             get { return (cCSAAccount); }
         }
 
+        /// <summary>
+        /// URI for the Azure table storage endpoint
+        /// </summary>
         public Uri UsersTableURI
         {
             get { return (new Uri(String.Format("{0}/", RootURL, "Users"))); }
         }
 
+        /// <summary>
+        /// Users table
+        /// </summary>
         public CloudTable UsersTable
         {
             get { return (cCTeUsers); }
@@ -51,11 +69,17 @@ namespace devoctomy.funk.core.Membership
 
         #region constructor / destructor
 
-        public Storage(String iRootURL, String iEnvironVarName)
+        /// <summary>
+        /// Construct an instance of the membership storage system
+        /// </summary>
+        /// <param name="iRootURL">Root Azure storage URL</param>
+        /// <param name="iConnectionStringEnvironVarName">Environment variable name of the connection string to use</param>
+        public Storage(String iRootURL, 
+            String iConnectionStringEnvironVarName)
         {
             cStrRootURL = iRootURL;
             if (cStrRootURL.EndsWith("/")) cStrRootURL.TrimEnd('/');
-            cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iEnvironVarName);
+            cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iConnectionStringEnvironVarName);
             cCSAAccount = CloudStorageAccount.Parse(cStrConnectionString);
             cCTeUsers = new CloudTable(UsersTableURI, cCSAAccount.Credentials);
         }
@@ -64,6 +88,11 @@ namespace devoctomy.funk.core.Membership
 
         #region public methods
 
+        /// <summary>
+        /// Get a user from storage by its email address
+        /// </summary>
+        /// <param name="iEmail">Email address of the user to get</param>
+        /// <returns>The required user, if found in storage, otherwise null</returns>
         public async Task<User> GetUser(String iEmail)
         {
             String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
@@ -88,6 +117,11 @@ namespace devoctomy.funk.core.Membership
             }
         }
 
+        /// <summary>
+        /// Replaces a user in the storage system
+        /// </summary>
+        /// <param name="iUser">User to replace</param>
+        /// <returns>True if the operation was successful</returns>
         public async Task<Boolean> Replace(User iUser)
         {
             TableOperation pTOnReplace = TableOperation.Replace(iUser);

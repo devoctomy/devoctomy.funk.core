@@ -3,6 +3,9 @@
 namespace devoctomy.funk.core.Environment
 {
 
+    /// <summary>
+    /// Helper functions for the current environment
+    /// </summary>
     public class EnvironmentHelpers
     {
 
@@ -13,7 +16,7 @@ namespace devoctomy.funk.core.Environment
         /// </summary>
         /// <param name="iName">Name of the environment variable to get from the system.</param>
         /// <param name="iTarget">Target of the environment variable, i.e. Processs / User / Machine.</param>
-        /// <returns></returns>
+        /// <returns>The value of the required environment variable</returns>
         public static String GetEnvironmentVariable(String iName, 
             EnvironmentVariableTarget iTarget = EnvironmentVariableTarget.Process)
         {
