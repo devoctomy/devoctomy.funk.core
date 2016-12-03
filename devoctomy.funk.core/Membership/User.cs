@@ -17,32 +17,32 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// Date / Time this user was created
         /// </summary>
-        public DateTime CreatedAt { get; private set; }
+        public DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Username of the user
         /// </summary>
-        public String UserName { get; private set; }
+        public String UserName { get; set; }
 
         /// <summary>
         /// Activation code used to enable signing in of the account, after creation
         /// </summary>
-        public String ActivationCode { get; private set; }
+        public String ActivationCode { get; set; }
 
         /// <summary>
         /// Is the user activated?
         /// </summary>
-        public Boolean Activated { get; private set; }
+        public Boolean Activated { get; set; }
 
         /// <summary>
         /// Date / Time the last OTP was requested
         /// </summary>
-        public DateTime OTPRequestedAt { get; private set; }
+        public DateTime OTPRequestedAt { get; set; }
 
         /// <summary>
         /// OTP / One Time Password
         /// </summary>
-        public String OTP { get; private set; }
+        public String OTP { get; set; }
 
         #endregion
 
@@ -69,7 +69,7 @@ namespace devoctomy.funk.core.Membership
             UserName = iUserName;
             RandomiseActivationCode(iActivationCodeLength);
             Activated = false;
-            OTPRequestedAt = DateTime.MinValue;
+            OTPRequestedAt = new DateTime(1982,4,3);
             OTP = string.Empty;
         }
 
@@ -143,6 +143,16 @@ namespace devoctomy.funk.core.Membership
                 }
             }
             return (pULRResult);
+        }
+
+        /// <summary>
+        /// Insert this user instance into member storage
+        /// </summary>
+        /// <param name="iStorage"></param>
+        /// <returns></returns>
+        public async Task<Boolean> Insert(Storage iStorage)
+        {
+            return (await iStorage.InsertUser(this));
         }
 
         #endregion

@@ -15,8 +15,8 @@ namespace devoctomy.funk.core.Membership
 
         private String cStrID = Guid.NewGuid().ToString();
         private String cStrEmail = String.Empty;
-        private DateTime cDTeCreatedAt = DateTime.MinValue;
-        private DateTime cDTeExpiresAt = DateTime.MinValue;
+        private DateTime cDTeCreatedAt = new DateTime(1982, 4, 3);
+        private DateTime cDTeExpiresAt = new DateTime(1982, 4, 3);
 
         #endregion
 

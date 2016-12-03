@@ -54,7 +54,7 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri UsersTableURI
         {
-            get { return (new Uri(String.Format("{0}/", RootURL, "Users"))); }
+            get { return (new Uri(String.Format("{0}/{1}", RootURL, "users"))); }
         }
 
         /// <summary>
@@ -155,7 +155,36 @@ namespace devoctomy.funk.core.Membership
         {
             TableOperation pTOnReplace = TableOperation.Replace(iUser);
             TableResult pTRtResult = await UsersTable.ExecuteAsync(pTOnReplace);
-            return (pTRtResult.HttpStatusCode == 200);
+            return (pTRtResult.HttpStatusCode == 200 ||
+                pTRtResult.HttpStatusCode == 204);
+        }
+
+        /// <summary>
+        /// Insert an instance of User into storage
+        /// </summary>
+        /// <param name="iUser">The instance of user to insert</param>
+        /// <returns>True if the insert was successful</returns>
+        public async Task<Boolean> InsertUser(User iUser)
+        {
+            Boolean pBlnCreatedTable = await UsersTable.CreateIfNotExistsAsync();
+            if (pBlnCreatedTable)
+            {
+                return (false);
+            }
+            else
+            {
+                TableOperation pTOnInsert = TableOperation.Insert(iUser);
+                TableResult pTRtResult = await UsersTable.ExecuteAsync(pTOnInsert);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                }
+                return (false);
+            }
         }
 
         #endregion
