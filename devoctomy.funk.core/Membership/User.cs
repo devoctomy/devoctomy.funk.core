@@ -86,10 +86,11 @@ namespace devoctomy.funk.core.Membership
         public async Task<Boolean> Activate(Storage iStorage, 
             String iActivationCde)
         {
-            if(ActivationCode == iActivationCde)
+            if(!Activated && ActivationCode == iActivationCde)
             {
                 Activated = true;
-                return(await iStorage.Replace(this));
+                ActivationCode = String.Empty;
+                return (await iStorage.Replace(this));
             }
             else
             {
