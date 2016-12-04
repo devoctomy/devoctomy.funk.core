@@ -1,4 +1,6 @@
-﻿using System;
+﻿using devoctomy.funk.core.Extensions;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -38,6 +40,20 @@ namespace devoctomy.funk.core.Cryptography
             return (pSBRRandom.ToString());
         }
 
+        public static void CreateRSAKeyPair(out String oPrivateKey,
+            out String oPublicKey,
+            Boolean iHexEncode)
+        {
+            using (RSACryptoServiceProvider pCSPRSA = new RSACryptoServiceProvider())
+            {
+                RSAParameters pRSAPrivateKey = pCSPRSA.ExportParameters(true);
+                oPrivateKey = new RSAParametersSerialisable(pRSAPrivateKey).ToJSON(true, Newtonsoft.Json.Formatting.None);
+                if (iHexEncode) oPrivateKey = oPrivateKey.HexEncode();
+                RSAParameters pRSAPublicKey = pCSPRSA.ExportParameters(false);
+                oPublicKey = new RSAParametersSerialisable(pRSAPrivateKey).ToJSON(false, Newtonsoft.Json.Formatting.None);
+                if (iHexEncode) oPublicKey = oPublicKey.HexEncode();
+            }
+        }
 
         #endregion
 

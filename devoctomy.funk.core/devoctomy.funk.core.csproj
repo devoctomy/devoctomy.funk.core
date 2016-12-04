@@ -70,6 +70,8 @@
   <ItemGroup>
     <Compile Include="Azure\Table\AzureTableHelpers.cs" />
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
+    <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Membership\SessionToken.cs" />
     <Compile Include="Membership\Storage.cs" />
     <Compile Include="Membership\User.cs" />
