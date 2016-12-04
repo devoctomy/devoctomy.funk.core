@@ -73,6 +73,7 @@
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Membership\SessionToken.cs" />
+    <Compile Include="Membership\SessionTokenSignature.cs" />
     <Compile Include="Membership\Storage.cs" />
     <Compile Include="Membership\User.cs" />
     <Compile Include="Membership\UserLoginResult.cs" />

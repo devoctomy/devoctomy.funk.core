@@ -82,6 +82,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="RSA.cs" />
+    <Compile Include="SessionToken.cs" />
     <Compile Include="UserManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,6 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 using devoctomy.funk.core.Environment;
+using devoctomy.funk.core.Cryptography;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -17,6 +20,7 @@ namespace devoctomy.funk.core.Membership
         private String cStrEmail = String.Empty;
         private DateTime cDTeCreatedAt = new DateTime(1982, 4, 3);
         private DateTime cDTeExpiresAt = new DateTime(1982, 4, 3);
+        private SessionTokenSignature cSTSSignature;
 
         #endregion
 
@@ -54,6 +58,14 @@ namespace devoctomy.funk.core.Membership
             get { return (cDTeExpiresAt); }
         }
 
+        /// <summary>
+        /// Session token signature, if signed
+        /// </summary>
+        public SessionTokenSignature Signature
+        {
+            get { return (cSTSSignature); }
+        }
+
         #endregion
 
         #region constructor / destructor
@@ -74,7 +86,7 @@ namespace devoctomy.funk.core.Membership
         {
             cStrEmail = iEmail;
             cDTeCreatedAt = DateTime.UtcNow;
-            cDTeExpiresAt = cDTeExpiresAt.Add(iLifeSpan);
+            cDTeExpiresAt = cDTeCreatedAt.Add(iLifeSpan);
         }
 
         #endregion
@@ -89,11 +101,17 @@ namespace devoctomy.funk.core.Membership
         public static SessionToken FromJSON(String iJSON)
         {
             SessionToken pSTnToken = new SessionToken();
-            JObject pJOtJSON = JObject.Parse(iJSON);
+            JsonReader pJRrReader = new JsonTextReader(new StringReader(iJSON));
+            pJRrReader.DateParseHandling = DateParseHandling.None;
+            JObject pJOtJSON = JObject.Load(pJRrReader);
             pSTnToken.cStrID = pJOtJSON["ID"].Value<String>();
             pSTnToken.cStrEmail = pJOtJSON["Email"].Value<String>();
             pSTnToken.cDTeCreatedAt = DateTime.ParseExact(pJOtJSON["CreatedAt"].Value<String>(), EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"), System.Globalization.CultureInfo.InvariantCulture);
             pSTnToken.cDTeExpiresAt = DateTime.ParseExact(pJOtJSON["ExpiresAt"].Value<String>(), EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"), System.Globalization.CultureInfo.InvariantCulture);
+            if(pJOtJSON["Signature"] != null)
+            {
+                pSTnToken.cSTSSignature = SessionTokenSignature.FromJSON(pJOtJSON["Signature"].Value<JObject>());
+            }
             return (pSTnToken);
         }
 
@@ -101,15 +119,54 @@ namespace devoctomy.funk.core.Membership
         /// Serialise this instance of the session token into a JSON string, used for transporting to the user
         /// </summary>
         /// <param name="iFormatting">JSON formatting to use when serialising</param>
+        /// <param name="iSign">True if the resulting JSON should be signed</param>
+        /// <param name="iPrivateRSAKey">The hex encoded RSA private key used to sign the JSON</param>
         /// <returns>A JSON string representation of this session token</returns>
-        public String ToString(Newtonsoft.Json.Formatting iFormatting)
+        public String ToString(Newtonsoft.Json.Formatting iFormatting,
+            Boolean iSign = false,
+            String iPrivateRSAKey = "")
         {
+            if (iSign && String.IsNullOrEmpty(iPrivateRSAKey)) throw new ArgumentException("Private RSA key has not been supplied.", "iPrivateRSAKey");
+
             JObject pJOtJSON = new JObject();
             pJOtJSON.Add("ID", new JValue(ID));
             pJOtJSON.Add("Email", new JValue(Email));
             pJOtJSON.Add("CreatedAt", new JValue(CreatedAt.ToString(EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"))));
             pJOtJSON.Add("ExpiresAt", new JValue(ExpiresAt.ToString(EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"))));
+            if(iSign)
+            {
+                RSAParametersSerialisable pRSACrypto = RSAParametersSerialisable.FromJSON(iPrivateRSAKey, true);
+                pRSACrypto.Sign(pJOtJSON);
+            }
+            else
+            {
+                if(Signature != null)
+                {
+                    pJOtJSON.Add("Signature", Signature.ToJSON());
+                }
+            }
             return (pJOtJSON.ToString(iFormatting));
+        }
+
+        /// <summary>
+        /// Verify that this session token is still valid using the provided RSA public key
+        /// </summary>
+        /// <param name="iPublicRSAKey">Public RSA key to verify the sdession token with as hex string</param>
+        /// <returns>True if the session token has a valid signature and has not expired</returns>
+        public Boolean Verify(String iPublicRSAKey)
+        {
+            RSAParametersSerialisable pRSAPublic = RSAParametersSerialisable.FromJSON(iPublicRSAKey,
+                true);
+            String pStrJSON = ToString(Newtonsoft.Json.Formatting.None);
+            JObject pJOtJSON = JObject.Parse(pStrJSON);
+            if(pRSAPublic.VerifySignature(pJOtJSON))
+            {
+                if(ExpiresAt > DateTime.UtcNow)
+                {
+                    return (true);
+                }
+            }
+            return (false);
         }
 
         #endregion
