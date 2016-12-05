@@ -81,6 +81,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Profile.cs" />
     <Compile Include="RSA.cs" />
     <Compile Include="SessionToken.cs" />
     <Compile Include="UserManagement.cs" />

@@ -72,6 +72,7 @@
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Membership\Profile.cs" />
     <Compile Include="Membership\SessionToken.cs" />
     <Compile Include="Membership\SessionTokenSignature.cs" />
     <Compile Include="Membership\Storage.cs" />
@@ -82,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="Assets\ProfileDefaults.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

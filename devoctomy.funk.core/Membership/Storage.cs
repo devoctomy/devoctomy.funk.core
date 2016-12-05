@@ -20,6 +20,7 @@ namespace devoctomy.funk.core.Membership
         String cStrConnectionString = String.Empty;
         CloudStorageAccount cCSAAccount;
         CloudTable cCTeUsers;
+        CloudTable cCTeProfiles;
 
         #endregion
 
@@ -50,11 +51,19 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// URI for the Azure table storage endpoint
+        /// URI for the users Azure table storage endpoint
         /// </summary>
         public Uri UsersTableURI
         {
             get { return (new Uri(String.Format("{0}/{1}", RootURL, "users"))); }
+        }
+
+        /// <summary>
+        /// URI for the profiles Azure table storage endpoint
+        /// </summary>
+        public Uri ProfilesTableURI
+        {
+            get { return (new Uri(String.Format("{0}/{1}", RootURL, "profiles"))); }
         }
 
         /// <summary>
@@ -63,6 +72,14 @@ namespace devoctomy.funk.core.Membership
         public CloudTable UsersTable
         {
             get { return (cCTeUsers); }
+        }
+
+        /// <summary>
+        /// Users table
+        /// </summary>
+        public CloudTable ProfilesTable
+        {
+            get { return (cCTeProfiles); }
         }
 
         #endregion
@@ -82,6 +99,7 @@ namespace devoctomy.funk.core.Membership
             cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iConnectionStringEnvironVarName);
             cCSAAccount = CloudStorageAccount.Parse(cStrConnectionString);
             cCTeUsers = new CloudTable(UsersTableURI, cCSAAccount.Credentials);
+            cCTeProfiles = new CloudTable(ProfilesTableURI, cCSAAccount.Credentials);
         }
 
         #endregion
@@ -206,35 +224,56 @@ namespace devoctomy.funk.core.Membership
         public Boolean InsertUser(User iUser)
         {
             Boolean pBlnCreatedTable = UsersTable.CreateIfNotExists();
-            if (pBlnCreatedTable)
+            TableOperation pTOnInsert = TableOperation.Insert(iUser);
+            TableResult pTRtResult;
+            try
+            {
+                pTRtResult = UsersTable.Execute(pTOnInsert);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                    default:
+                        {
+                            return (false);
+                        }
+                }
+            }
+            catch (Exception ex)
             {
                 return (false);
             }
-            else
-            {
-                TableOperation pTOnInsert = TableOperation.Insert(iUser);
-                TableResult pTRtResult;
-                try
-                {
-                    pTRtResult = UsersTable.Execute(pTOnInsert);
-                    switch (pTRtResult.HttpStatusCode)
-                    {
-                        case 200:
-                        case 204:
-                            {
-                                return (true);
-                            }
-                        default:
-                            {
-                                return (false);
-                            }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return (false);
-                }
-            }
+        }
+
+        public Boolean InsertProfile(Profile iProfile)
+        {
+            Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
+            //TableOperation pTOnInsert = TableOperation.Insert(iUser);
+            //TableResult pTRtResult;
+            //try
+            //{
+            //    pTRtResult = UsersTable.Execute(pTOnInsert);
+            //    switch (pTRtResult.HttpStatusCode)
+            //    {
+            //        case 200:
+            //        case 204:
+            //            {
+            //                return (true);
+            //            }
+            //        default:
+            //            {
+            //                return (false);
+            //            }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return (false);
+            //}
+            throw new NotImplementedException();
         }
 
         #endregion
