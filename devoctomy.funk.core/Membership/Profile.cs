@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,33 @@ namespace devoctomy.funk.core.Membership
 
         #endregion
 
+        #region public properties
+
+        public String this[String iKey]
+        {
+            get
+            {
+                String[] pStrKeyParts = iKey.Split('.');
+                return(GetValue(pStrKeyParts[0],
+                    pStrKeyParts[1],
+                    pStrKeyParts[2]));
+            }
+            set
+            {
+                String[] pStrKeyParts = iKey.Split('.');
+                SetValue(pStrKeyParts[0],
+                    pStrKeyParts[1],
+                    pStrKeyParts[2],
+                    value);
+            }
+        }
+
+        #endregion
+
         #region constructor / destructor
+
+        private Profile()
+        { }
 
         public Profile(String iDefaultJSON)
         {
@@ -35,7 +62,7 @@ namespace devoctomy.funk.core.Membership
                     {
                         String pStrFieldName = curField["Name"].Value<String>();
                         String pStrDefaultValue = curField["Default"].Value<String>();
-                        cDicParams[pStrCategory][pStrCategory].Add(pStrFieldName, pStrDefaultValue);
+                        cDicParams[pStrCategory][pStrSubCategory].Add(pStrFieldName, pStrDefaultValue);
                     }
                 }
             }
@@ -44,6 +71,28 @@ namespace devoctomy.funk.core.Membership
         #endregion
 
         #region public methods
+
+        public static Profile FromDynamicTableEntity(DynamicTableEntity iDynamicTableEntity)
+        {
+            Profile pProProfile = new Profile();
+            foreach (String curKey in iDynamicTableEntity.Properties.Keys)
+            {
+                EntityProperty pEPyProperty = iDynamicTableEntity.Properties[curKey];
+                String[] pStrKeyParts = curKey.Split('.');
+                if(!pProProfile.cDicParams.ContainsKey(pStrKeyParts[0]))
+                {
+                    //category
+                    pProProfile.cDicParams.Add(pStrKeyParts[0], new Dictionary<String, Dictionary<String, String>>());
+                }
+                if(!pProProfile.cDicParams[pStrKeyParts[0]].ContainsKey(pStrKeyParts[1]))
+                {
+                    //sub category
+                    pProProfile.cDicParams[pStrKeyParts[0]].Add(pStrKeyParts[1], new Dictionary<String, String>());
+                }
+                pProProfile.cDicParams[pStrKeyParts[0]][pStrKeyParts[1]].Add(pStrKeyParts[2], pEPyProperty.StringValue);
+            }
+            return (pProProfile);
+        }
 
         public String GetValue(String iCategory,
             String iSubCategory,
@@ -60,9 +109,63 @@ namespace devoctomy.funk.core.Membership
             cDicParams[iCategory][iSubCategory][iField] = iValue;
         }
 
+        public DynamicTableEntity ToDynamicTableEntity(String iPartitionKey,
+            String iRowKey)
+        {
+            DynamicTableEntity pDTEEntity = new DynamicTableEntity(iPartitionKey,
+                iRowKey);
+            foreach (String curCategory in cDicParams.Keys)
+            {
+                foreach (String curSubCategory in cDicParams[curCategory].Keys)
+                {
+                    foreach (String curField in cDicParams[curCategory][curSubCategory].Keys)
+                    {
+                        String pStrKey = String.Format("{0}.{1}.{2}",
+                            curCategory,
+                            curSubCategory,
+                            curField);
+                        EntityProperty pEPyField = new EntityProperty(cDicParams[curCategory][curSubCategory][curField]);
+                        pDTEEntity.Properties.Add(pStrKey, pEPyField);
+                    }
+                }
+            }
+            return (pDTEEntity);
+        }
+
+        public String ToJSON(Newtonsoft.Json.Formatting iFormatting)
+        {
+            JObject pJOtJSON = new JObject();
+            JArray pJAyCategories = new JArray();
+            foreach(String curCategory in cDicParams.Keys)
+            {
+                JObject pJOtCategory = new JObject();
+                pJOtCategory.Add("Name", new JValue(curCategory));
+                JArray pJAySubCategories = new JArray();
+                foreach (String curSubCategory in cDicParams[curCategory].Keys)
+                {
+                    JObject pJOtSubCategory = new JObject();
+                    pJOtSubCategory.Add("Name", new JValue(curSubCategory));
+                    JArray pJAyFields = new JArray();
+                    foreach(String curField in cDicParams[curCategory][curSubCategory].Keys)
+                    {
+                        JObject pJOtField = new JObject();
+                        pJOtField.Add("Name", new JValue(curField));
+                        pJOtField.Add("Value", new JValue(cDicParams[curCategory][curSubCategory][curField]));
+                        pJAyFields.Add(pJOtField);
+                    }
+                    pJOtSubCategory.Add("Fields", pJAyFields);
+                    pJAySubCategories.Add(pJOtSubCategory);
+                }
+                pJOtCategory.Add("SubCategories", pJAySubCategories);
+                pJAyCategories.Add(pJOtCategory);
+            }
+            pJOtJSON.Add("Categories", pJAyCategories);
+            return (pJOtJSON.ToString(iFormatting));
+        }
+
         public void Update()
         {
-
+           // DynamicTableEntity p
         }
 
         #endregion

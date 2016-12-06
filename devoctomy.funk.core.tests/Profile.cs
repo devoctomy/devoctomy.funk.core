@@ -28,6 +28,8 @@ namespace devoctomy.funk.core.tests
         {
             Membership.Profile pProProfile = new Membership.Profile(cStrDefaultProfile);
 
+            String pop = pProProfile.ToJSON(Newtonsoft.Json.Formatting.Indented);
+
         }
 
         #endregion
