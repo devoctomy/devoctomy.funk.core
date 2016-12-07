@@ -44,6 +44,16 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public String OTP { get; set; }
 
+        /// <summary>
+        /// Number of times this user has attempted to login incorrectly, in a row
+        /// </summary>
+        public Int32 IncorrectLoginAttempts { get; set; }
+
+        /// <summary>
+        /// This account is locked, either from incorrect login attemps or administrative action
+        /// </summary>
+        public Boolean Locked { get; set; }
+
         #endregion
 
         #region constructor / destructor
@@ -133,14 +143,31 @@ namespace devoctomy.funk.core.Membership
             TimeSpan iSessionLifeSpan)
         {
             UserLoginResult pULRResult = new UserLoginResult();
-            if (OTP == iOTP)
+            if (!Locked && OTP == iOTP)
             {
                 OTP = String.Empty;
+                IncorrectLoginAttempts = 0;
                 if (await iStorage.Replace(this))
                 {
                     pULRResult.Success = true;
                     pULRResult.SessionToken = new SessionToken(RowKey,
                         iSessionLifeSpan);
+                }
+            }
+            else
+            {
+                if(Locked)
+                {
+                    pULRResult.AccountPreviouslyLocked = true;
+                }
+                else
+                {
+                    IncorrectLoginAttempts += 1;
+                    if (IncorrectLoginAttempts >= 3)
+                    {
+                        Locked = true;
+                    }
+                    await iStorage.Replace(this);
                 }
             }
             return (pULRResult);
