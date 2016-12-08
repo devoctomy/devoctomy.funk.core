@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using devoctomy.funk.core.Environment;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-
+using System.IO;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -122,8 +122,8 @@ namespace devoctomy.funk.core.Membership
             }
             else
             {
-                TableOperation operation = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
-                pTRtResult = UsersTable.Execute(operation);
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
+                pTRtResult = UsersTable.Execute(pTOnRetrieve);
                 switch(pTRtResult.HttpStatusCode)
                 {
                     case 200:
@@ -151,8 +151,8 @@ namespace devoctomy.funk.core.Membership
             }
             else
             {
-                TableOperation operation = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
-                pTRtResult = UsersTable.Execute(operation);
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
+                pTRtResult = UsersTable.Execute(pTOnRetrieve);
                 switch (pTRtResult.HttpStatusCode)
                 {
                     case 200:
@@ -209,7 +209,7 @@ namespace devoctomy.funk.core.Membership
                             }
                     }
                 }
-                catch(Exception ex)
+                catch //(Exception ex)
                 {
                     return (false);
                 }
@@ -224,11 +224,10 @@ namespace devoctomy.funk.core.Membership
         public Boolean InsertUser(User iUser)
         {
             Boolean pBlnCreatedTable = UsersTable.CreateIfNotExists();
-            TableOperation pTOnInsert = TableOperation.Insert(iUser);
-            TableResult pTRtResult;
             try
             {
-                pTRtResult = UsersTable.Execute(pTOnInsert);
+                TableOperation pTOnInsert = TableOperation.Insert(iUser);
+                TableResult pTRtResult = UsersTable.Execute(pTOnInsert);
                 switch (pTRtResult.HttpStatusCode)
                 {
                     case 200:
@@ -242,38 +241,65 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 return (false);
             }
         }
 
-        public Boolean InsertProfile(Profile iProfile)
+        public Profile GetUserProfile(User iUser)
         {
+            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
-            //TableOperation pTOnInsert = TableOperation.Insert(iUser);
-            //TableResult pTRtResult;
-            //try
-            //{
-            //    pTRtResult = UsersTable.Execute(pTOnInsert);
-            //    switch (pTRtResult.HttpStatusCode)
-            //    {
-            //        case 200:
-            //        case 204:
-            //            {
-            //                return (true);
-            //            }
-            //        default:
-            //            {
-            //                return (false);
-            //            }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return (false);
-            //}
-            throw new NotImplementedException();
+            if(pBlnCreatedTable)
+            {
+                String pStrProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
+                Profile pProProfile = new Profile(pStrProfile);
+                return (pProProfile);
+            }
+            else
+            {
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<DynamicTableEntity>(pStrPartitionKey, iUser.RowKey);
+                TableResult pTRtResult = ProfilesTable.Execute(pTOnRetrieve);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                        {
+                            Profile pProProfile = Profile.FromDynamicTableEntity((DynamicTableEntity)pTRtResult.Result);
+                            return (pProProfile);
+                        }
+                }
+            }
+            return (null);
+        }
+
+        public Boolean InsertProfile(User iUser,
+            Profile iProfile)
+        {
+            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
+            Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
+            TableOperation pTOnInsert = TableOperation.Insert(iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey));
+            TableResult pTRtResult;
+            try
+            {
+                pTRtResult = ProfilesTable.Execute(pTOnInsert);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                    default:
+                        {
+                            return (false);
+                        }
+                }
+            }
+            catch //(Exception ex)
+            {
+                return (false);
+            }
         }
 
         #endregion

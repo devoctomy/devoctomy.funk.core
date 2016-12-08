@@ -8,11 +8,11 @@
           "Fields": [
             {
               "Name": "FullName",
-              "Default": "Nicholas Phillip Pateman"
+              "Value": "Nicholas Phillip Pateman"
             },
             {
               "Name": "DateOfBirth",
-              "Default": "03-14-1982"
+              "Value": "03-14-1982"
             }
           ]
         }
@@ -26,7 +26,7 @@
           "Fields": [
             {
               "Name": "Searchable",
-              "Default": "true"
+              "Value": "true"
             }
           ]
         }

@@ -61,7 +61,7 @@ namespace devoctomy.funk.core.Membership
                     foreach (JObject curField in curSubCategory["Fields"].Value<JArray>())
                     {
                         String pStrFieldName = curField["Name"].Value<String>();
-                        String pStrDefaultValue = curField["Default"].Value<String>();
+                        String pStrDefaultValue = curField["Value"].Value<String>();
                         cDicParams[pStrCategory][pStrSubCategory].Add(pStrFieldName, pStrDefaultValue);
                     }
                 }

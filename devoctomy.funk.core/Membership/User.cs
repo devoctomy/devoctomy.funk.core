@@ -176,8 +176,8 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// Insert this user instance into member storage asynchronously
         /// </summary>
-        /// <param name="iStorage"></param>
-        /// <returns></returns>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <returns>True on success</returns>
         public async Task<Boolean> InsertAsync(Storage iStorage)
         {
             return (await iStorage.InsertUserAsync(this));
@@ -186,11 +186,21 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// Insert this user instance into member storage
         /// </summary>
-        /// <param name="iStorage"></param>
-        /// <returns></returns>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <returns>True on success</returns>
         public Boolean Insert(Storage iStorage)
         {
             return (iStorage.InsertUser(this));
+        }
+
+        /// <summary>
+        /// Get this users profile
+        /// </summary>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <returns>True on success</returns>
+        public Profile GetProfile(Storage iStorage)
+        {
+            return (iStorage.GetUserProfile(this));
         }
 
         #endregion
