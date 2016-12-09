@@ -201,7 +201,9 @@ namespace devoctomy.funk.core.Membership
                         case 200:
                         case 204:
                             {
-                                return (true);
+                                Boolean pBlnRetVal;
+                                pBlnRetVal = CreateDefaultUserProfile(iUser);
+                                return (pBlnRetVal);
                             }
                         default:
                             {
@@ -233,7 +235,9 @@ namespace devoctomy.funk.core.Membership
                     case 200:
                     case 204:
                         {
-                            return (true);
+                            Boolean pBlnRetVal;
+                            pBlnRetVal = CreateDefaultUserProfile(iUser);
+                            return (pBlnRetVal);
                         }
                     default:
                         {
@@ -273,12 +277,21 @@ namespace devoctomy.funk.core.Membership
             return (null);
         }
 
+        public Boolean CreateDefaultUserProfile(User iUser)
+        {
+            String pStrDefaultProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
+            Profile pProProfile = new Profile(pStrDefaultProfile);
+            return (InsertProfile(iUser,
+                pProProfile));
+        }
+
         public Boolean InsertProfile(User iUser,
             Profile iProfile)
         {
             String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
-            TableOperation pTOnInsert = TableOperation.Insert(iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey));
+            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey);
+            TableOperation pTOnInsert = TableOperation.Insert(pDTEProfile);
             TableResult pTRtResult;
             try
             {
@@ -296,7 +309,38 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch //(Exception ex)
+            catch (Exception ex)
+            {
+                return (false);
+            }
+        }
+
+        public Boolean ReplaceProfile(User iUser,
+            Profile iProfile)
+        {
+            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
+            Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
+            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey);
+            pDTEProfile.ETag = "*";
+            TableOperation pTOnReplace = TableOperation.Replace(pDTEProfile);
+            TableResult pTRtResult;
+            try
+            {
+                pTRtResult = ProfilesTable.Execute(pTOnReplace);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                    default:
+                        {
+                            return (false);
+                        }
+                }
+            }
+            catch (Exception ex)
             {
                 return (false);
             }

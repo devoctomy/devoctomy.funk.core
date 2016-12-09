@@ -203,6 +203,19 @@ namespace devoctomy.funk.core.Membership
             return (iStorage.GetUserProfile(this));
         }
 
+        /// <summary>
+        /// Update the profile
+        /// </summary>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <param name="iProfile">The profile to associate with the user</param>
+        /// <returns></returns>
+        public Boolean ReplaceProfile(Storage iStorage,
+            Profile iProfile)
+        {
+            return(iProfile.Replace(iStorage,
+                this));
+        }
+
         #endregion
 
     }

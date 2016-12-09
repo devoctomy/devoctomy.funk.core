@@ -24,14 +24,14 @@ namespace devoctomy.funk.core.Membership
         {
             get
             {
-                String[] pStrKeyParts = iKey.Split('.');
+                String[] pStrKeyParts = iKey.Split('_');
                 return(GetValue(pStrKeyParts[0],
                     pStrKeyParts[1],
                     pStrKeyParts[2]));
             }
             set
             {
-                String[] pStrKeyParts = iKey.Split('.');
+                String[] pStrKeyParts = iKey.Split('_');
                 SetValue(pStrKeyParts[0],
                     pStrKeyParts[1],
                     pStrKeyParts[2],
@@ -75,10 +75,11 @@ namespace devoctomy.funk.core.Membership
         public static Profile FromDynamicTableEntity(DynamicTableEntity iDynamicTableEntity)
         {
             Profile pProProfile = new Profile();
+            pProProfile.cDicParams = new Dictionary<String, Dictionary<String, Dictionary<String, String>>>();
             foreach (String curKey in iDynamicTableEntity.Properties.Keys)
             {
                 EntityProperty pEPyProperty = iDynamicTableEntity.Properties[curKey];
-                String[] pStrKeyParts = curKey.Split('.');
+                String[] pStrKeyParts = curKey.Split('_');
                 if(!pProProfile.cDicParams.ContainsKey(pStrKeyParts[0]))
                 {
                     //category
@@ -120,7 +121,7 @@ namespace devoctomy.funk.core.Membership
                 {
                     foreach (String curField in cDicParams[curCategory][curSubCategory].Keys)
                     {
-                        String pStrKey = String.Format("{0}.{1}.{2}",
+                        String pStrKey = String.Format("{0}_{1}_{2}",
                             curCategory,
                             curSubCategory,
                             curField);
@@ -163,9 +164,17 @@ namespace devoctomy.funk.core.Membership
             return (pJOtJSON.ToString(iFormatting));
         }
 
-        public void Update()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iStorage"></param>
+        /// <param name="iUser"></param>
+        /// <returns></returns>
+        public Boolean Replace(Storage iStorage, 
+            User iUser)
         {
-           // DynamicTableEntity p
+            return(iStorage.ReplaceProfile(iUser,
+                this));
         }
 
         #endregion

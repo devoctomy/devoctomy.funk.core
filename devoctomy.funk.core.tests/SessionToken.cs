@@ -28,11 +28,11 @@ namespace devoctomy.funk.core.tests
                 out cStrPublicKey,
                 true);
             cStrEmail = "helloworld@foobar.com";
-            EnvironmentHelpers.SetEnvironmentVariable("DateTimeFormat", "yyyy-MM-ddThh:mm:ssZ", EnvironmentVariableTarget.Process);
+            EnvironmentHelpers.SetEnvironmentVariable("DateTimeFormat", "yyyy-MM-ddTHH:mm:ssZ", EnvironmentVariableTarget.Process);
         }
 
         [TestMethod]
-        public void CreateSessionAndPrivateVerifyWithPrivate()
+        public void CreateSessionAndSignWithPrivateVerifyWithPublic()
         {
             devoctomy.funk.core.Membership.SessionToken pSTnToken = new Membership.SessionToken(cStrEmail,
                 new TimeSpan(1,0,0));
@@ -45,7 +45,7 @@ namespace devoctomy.funk.core.tests
         }
 
         [TestMethod]
-        public void CreateSessionAndPrivateVerifyWithPrivateAfterExpired()
+        public void CreateSessionSignWithPrivateVerifyWithPublicAfterExpired()
         {
             devoctomy.funk.core.Membership.SessionToken pSTnToken = new Membership.SessionToken(cStrEmail,
                 new TimeSpan(0, 0, 1));

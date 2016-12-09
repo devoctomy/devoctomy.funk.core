@@ -29,7 +29,7 @@ namespace devoctomy.funk.core.tests
         #region public methods
 
         [TestInitialize()]
-        public async void Init()
+        public void Init()
         {
             String pStrCreds = File.ReadAllText("../../../../azure/creds.json");
             JObject pJOtCreds = JObject.Parse(pStrCreds);
@@ -48,7 +48,7 @@ namespace devoctomy.funk.core.tests
                 "AzureWebJobsStorage");
             cUsrUser = new User(cStrEmail, cStrUserName, 6);
             cUsrUser.ActivationCode = cStrActivationCode;
-            Assert.IsTrue(await cUsrUser.InsertAsync(cStoStorage));
+            Assert.IsTrue(cUsrUser.Insert(cStoStorage));
         }
 
         [TestMethod()]
@@ -62,7 +62,20 @@ namespace devoctomy.funk.core.tests
         [TestMethod()]
         public void GetUserProfile()
         {
-            devoctomy.funk.core.Membership.Profile pProProfile = cStoStorage.GetUserProfile(cUsrUser);
+            devoctomy.funk.core.Membership.Profile pProProfile = cUsrUser.GetProfile(cStoStorage);
+        }
+
+        [TestMethod()]
+        public void UpdatetUserProfile()
+        {
+            String pStrNewFullName = CryptographyHelpers.RandomString(12);
+            devoctomy.funk.core.Membership.Profile pProProfile = cUsrUser.GetProfile(cStoStorage);
+            pProProfile.SetValue("Profile",
+                "Biography",
+                "FullName",
+                pStrNewFullName);
+            Assert.IsTrue(cUsrUser.ReplaceProfile(cStoStorage,
+                pProProfile));
         }
 
         #endregion
