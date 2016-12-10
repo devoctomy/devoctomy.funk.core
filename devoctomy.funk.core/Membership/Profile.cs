@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.core.Membership
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class Profile
     {
 
@@ -20,6 +23,11 @@ namespace devoctomy.funk.core.Membership
 
         #region public properties
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iKey"></param>
+        /// <returns></returns>
         public String this[String iKey]
         {
             get
@@ -43,9 +51,16 @@ namespace devoctomy.funk.core.Membership
 
         #region constructor / destructor
 
+        /// <summary>
+        /// 
+        /// </summary>
         private Profile()
         { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iDefaultJSON"></param>
         public Profile(String iDefaultJSON)
         {
             cDicParams = new Dictionary<String, Dictionary<String, Dictionary<String, String>>>();
@@ -72,6 +87,36 @@ namespace devoctomy.funk.core.Membership
 
         #region public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public List<String> GetAllKeys()
+        {
+            List<String> pLisKeys = new List<String>();
+            foreach (String curCategory in cDicParams.Keys)
+            {
+                foreach (String curSubCategory in cDicParams[curCategory].Keys)
+                {
+                    foreach (String curField in cDicParams[curCategory][curSubCategory].Keys)
+                    {
+                        String pStrKey = String.Format("{0}_{1}_{2}",
+                            curCategory,
+                            curSubCategory,
+                            curField);
+                        EntityProperty pEPyField = new EntityProperty(cDicParams[curCategory][curSubCategory][curField]);
+                        pLisKeys.Add(pStrKey);
+                    }
+                }
+            }
+            return (pLisKeys);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iDynamicTableEntity"></param>
+        /// <returns></returns>
         public static Profile FromDynamicTableEntity(DynamicTableEntity iDynamicTableEntity)
         {
             Profile pProProfile = new Profile();
@@ -95,6 +140,13 @@ namespace devoctomy.funk.core.Membership
             return (pProProfile);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iCategory"></param>
+        /// <param name="iSubCategory"></param>
+        /// <param name="iField"></param>
+        /// <returns></returns>
         public String GetValue(String iCategory,
             String iSubCategory,
             String iField)
@@ -102,6 +154,13 @@ namespace devoctomy.funk.core.Membership
             return (cDicParams[iCategory][iSubCategory][iField]);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iCategory"></param>
+        /// <param name="iSubCategory"></param>
+        /// <param name="iField"></param>
+        /// <param name="iValue"></param>
         public void SetValue(String iCategory,
             String iSubCategory,
             String iField,
@@ -110,6 +169,12 @@ namespace devoctomy.funk.core.Membership
             cDicParams[iCategory][iSubCategory][iField] = iValue;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iPartitionKey"></param>
+        /// <param name="iRowKey"></param>
+        /// <returns></returns>
         public DynamicTableEntity ToDynamicTableEntity(String iPartitionKey,
             String iRowKey)
         {
@@ -133,6 +198,11 @@ namespace devoctomy.funk.core.Membership
             return (pDTEEntity);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFormatting"></param>
+        /// <returns></returns>
         public String ToJSON(Newtonsoft.Json.Formatting iFormatting)
         {
             JObject pJOtJSON = new JObject();

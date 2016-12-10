@@ -6,6 +6,7 @@ using devoctomy.funk.core.Environment;
 using devoctomy.funk.core.Cryptography;
 using devoctomy.funk.core.Membership;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace devoctomy.funk.core.tests
 {
@@ -70,12 +71,23 @@ namespace devoctomy.funk.core.tests
         {
             String pStrNewFullName = CryptographyHelpers.RandomString(12);
             devoctomy.funk.core.Membership.Profile pProProfile = cUsrUser.GetProfile(cStoStorage);
-            pProProfile.SetValue("Profile",
-                "Biography",
-                "FullName",
-                pStrNewFullName);
+            List<String> pLisKeys = pProProfile.GetAllKeys();
+            Dictionary<String, String> pDicNewValues = new Dictionary<String, String>();
+            foreach(String curKey in pLisKeys)
+            {
+                String pStrRandom = CryptographyHelpers.RandomString(8);
+                pProProfile[curKey] = pStrRandom;
+                pDicNewValues.Add(curKey, pStrRandom);
+            }
             Assert.IsTrue(cUsrUser.ReplaceProfile(cStoStorage,
                 pProProfile));
+            pProProfile = cUsrUser.GetProfile(cStoStorage);
+            foreach (String curKey in pLisKeys)
+            {
+                String pStrValue = pProProfile[curKey];
+                String pStrExpecting = pDicNewValues[curKey];
+                Assert.IsTrue(pStrValue.Equals(pStrExpecting));
+            }
         }
 
         #endregion
