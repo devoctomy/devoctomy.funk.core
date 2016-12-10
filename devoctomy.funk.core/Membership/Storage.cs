@@ -251,6 +251,11 @@ namespace devoctomy.funk.core.Membership
             }
         }
 
+        /// <summary>
+        /// Get a users profile
+        /// </summary>
+        /// <param name="iUser">The user of the profile to get</param>
+        /// <returns>The users profile if found, otherwise null</returns>
         public Profile GetUserProfile(User iUser)
         {
             String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
@@ -277,6 +282,11 @@ namespace devoctomy.funk.core.Membership
             return (null);
         }
 
+        /// <summary>
+        /// Create the default profile for a user
+        /// </summary>
+        /// <param name="iUser">The user to create the default profile for</param>
+        /// <returns>True if successsful</returns>
         public Boolean CreateDefaultUserProfile(User iUser)
         {
             String pStrDefaultProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
@@ -285,6 +295,12 @@ namespace devoctomy.funk.core.Membership
                 pProProfile));
         }
 
+        /// <summary>
+        /// Insert a profile into storage
+        /// </summary>
+        /// <param name="iUser">The user to associate the profile with</param>
+        /// <param name="iProfile">The profile instance to insert</param>
+        /// <returns>True if successful</returns>
         public Boolean InsertProfile(User iUser,
             Profile iProfile)
         {
@@ -315,6 +331,12 @@ namespace devoctomy.funk.core.Membership
             }
         }
 
+        /// <summary>
+        /// Replaces a profile in storage with the provided profile
+        /// </summary>
+        /// <param name="iUser">The user to accociate the profile with</param>
+        /// <param name="iProfile">The profile instance to replace the existing one with</param>
+        /// <returns>True if successful</returns>
         public Boolean ReplaceProfile(User iUser,
             Profile iProfile)
         {

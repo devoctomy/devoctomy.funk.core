@@ -10,7 +10,7 @@ namespace devoctomy.funk.core.Membership
 {
 
     /// <summary>
-    /// 
+    /// User profile, for containing per/user system settings
     /// </summary>
     public class Profile
     {
@@ -24,10 +24,10 @@ namespace devoctomy.funk.core.Membership
         #region public properties
 
         /// <summary>
-        /// 
+        /// Get / set a field via its key, 'category_subcategory_field'
         /// </summary>
-        /// <param name="iKey"></param>
-        /// <returns></returns>
+        /// <param name="iKey">Key of the field to get / set</param>
+        /// <returns>The desired field as a string</returns>
         public String this[String iKey]
         {
             get
@@ -52,15 +52,15 @@ namespace devoctomy.funk.core.Membership
         #region constructor / destructor
 
         /// <summary>
-        /// 
+        /// Private constructor used for internal use only
         /// </summary>
         private Profile()
         { }
 
         /// <summary>
-        /// 
+        /// Constructs an instance of Profile using the provided JSON string
         /// </summary>
-        /// <param name="iDefaultJSON"></param>
+        /// <param name="iDefaultJSON">JSON string representation of the profile to create</param>
         public Profile(String iDefaultJSON)
         {
             cDicParams = new Dictionary<String, Dictionary<String, Dictionary<String, String>>>();
@@ -88,9 +88,10 @@ namespace devoctomy.funk.core.Membership
         #region public methods
 
         /// <summary>
-        /// 
+        /// Get a list of all profile keys, delimited by an underscore.  These can be passed into the
+        /// default indexed property to set / get values
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of keys delimited by an underscore, 'category_subcategory_field'</returns>
         public List<String> GetAllKeys()
         {
             List<String> pLisKeys = new List<String>();
@@ -113,10 +114,10 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Parse the profile from a dynamic table entity
         /// </summary>
-        /// <param name="iDynamicTableEntity"></param>
-        /// <returns></returns>
+        /// <param name="iDynamicTableEntity">The dynamic table entity to parse</param>
+        /// <returns>An instance of profile with values parsed from the provided dynamic table entity</returns>
         public static Profile FromDynamicTableEntity(DynamicTableEntity iDynamicTableEntity)
         {
             Profile pProProfile = new Profile();
@@ -141,12 +142,12 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Get the value of a specific field
         /// </summary>
-        /// <param name="iCategory"></param>
-        /// <param name="iSubCategory"></param>
-        /// <param name="iField"></param>
-        /// <returns></returns>
+        /// <param name="iCategory">Category of the field to get</param>
+        /// <param name="iSubCategory">Sub category of the field to get</param>
+        /// <param name="iField">Name of the field to get</param>
+        /// <returns>The value of the field, as a string</returns>
         public String GetValue(String iCategory,
             String iSubCategory,
             String iField)
@@ -155,12 +156,12 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Set the value of a specific field
         /// </summary>
-        /// <param name="iCategory"></param>
-        /// <param name="iSubCategory"></param>
-        /// <param name="iField"></param>
-        /// <param name="iValue"></param>
+        /// <param name="iCategory">Category of the field to set</param>
+        /// <param name="iSubCategory">Sub category of the field to set</param>
+        /// <param name="iField">Name of the field to set</param>
+        /// <param name="iValue">New value for the field</param>
         public void SetValue(String iCategory,
             String iSubCategory,
             String iField,
@@ -170,11 +171,11 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Convert this profile instance to a dynamic table entity ready for inserting into storage
         /// </summary>
-        /// <param name="iPartitionKey"></param>
-        /// <param name="iRowKey"></param>
-        /// <returns></returns>
+        /// <param name="iPartitionKey">The partition key to use for the profile</param>
+        /// <param name="iRowKey">The row key to use for the profile</param>
+        /// <returns>A dynamic table entity representing this profile instance</returns>
         public DynamicTableEntity ToDynamicTableEntity(String iPartitionKey,
             String iRowKey)
         {
@@ -199,10 +200,10 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Serialise this profile instance as a JSON string
         /// </summary>
-        /// <param name="iFormatting"></param>
-        /// <returns></returns>
+        /// <param name="iFormatting">JSON formatting to use when serialising</param>
+        /// <returns>A JSON string representation of this profile instance</returns>
         public String ToJSON(Newtonsoft.Json.Formatting iFormatting)
         {
             JObject pJOtJSON = new JObject();
@@ -235,11 +236,11 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// 
+        /// Inserts this profile instance into storage, under the provided user
         /// </summary>
-        /// <param name="iStorage"></param>
-        /// <param name="iUser"></param>
-        /// <returns></returns>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <param name="iUser">The user to associate this profile with</param>
+        /// <returns>True if the profile was replaced</returns>
         public Boolean Replace(Storage iStorage, 
             User iUser)
         {
