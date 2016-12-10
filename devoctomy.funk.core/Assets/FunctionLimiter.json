@@ -1,0 +1,37 @@
+﻿{
+  "Functions": [
+    {
+      "Name": "ServiceInfo",
+      "Limits": [
+        {
+          "Source": "requesterip",
+          "Frequency": "hour",
+          "Count": 1,
+          "Limit": 20
+        }
+      ]
+    },
+    {
+      "Name": "BeginCreateAccount",
+      "Limits": [
+        {
+          "Source": "requesterip",
+          "Frequency": "hour",
+          "Count": 1,
+          "Limit": 2
+        }
+      ]
+    },
+    {
+      "Name": "RequestLogin",
+      "Limits": [
+        {
+          "Source": "requesterip",
+          "Frequency": "hour",
+          "Count": 1,
+          "Limit": 5
+        }
+      ]
+    }
+  ]
+}

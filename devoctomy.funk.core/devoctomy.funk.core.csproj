@@ -68,6 +68,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Azure\Functions\FunctionLimiter.cs" />
+    <Compile Include="Azure\Functions\FunctionLimiterFunction.cs" />
+    <Compile Include="Azure\Functions\FunctionLimiterLimit.cs" />
     <Compile Include="Azure\Table\AzureTableHelpers.cs" />
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
@@ -86,6 +89,7 @@
     <Content Include="Assets\ProfileDefaults.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Assets\FunctionLimiter.json" />
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
