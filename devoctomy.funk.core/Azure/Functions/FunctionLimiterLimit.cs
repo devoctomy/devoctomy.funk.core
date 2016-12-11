@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using devoctomy.funk.core.Membership;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,12 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public enums
 
+        public enum LimitType
+        {
+            none = 0,
+            hit = 1
+        }
+
         public enum SourcePoint
         {
             none = 0,
@@ -26,10 +33,7 @@ namespace devoctomy.funk.core.Azure.Functions
             seconds = 1,
             minutes = 2,
             hours = 3,
-            days = 4,
-            weeks = 5,
-            months = 6,
-            years = 7
+            days = 4
         }
 
         #endregion
@@ -74,6 +78,37 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #endregion
 
+        #region private methods
+
+        private DateTime GetLimitEarliest()
+        {
+            switch(Frequency)
+            {
+                case LimitFrequency.seconds:
+                    {
+                        return (DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 1 * FrequencyCount)));
+                    }
+                case LimitFrequency.minutes:
+                    {
+                        return (DateTime.UtcNow.Subtract(new TimeSpan(0, 1 * FrequencyCount, 0)));
+                    }
+                case LimitFrequency.hours:
+                    {
+                        return (DateTime.UtcNow.Subtract(new TimeSpan(1 * FrequencyCount, 0, 0)));
+                    }
+                case LimitFrequency.days:
+                    {
+                        return (DateTime.UtcNow.Subtract(new TimeSpan(1 * FrequencyCount, 0, 0, 0)));
+                    }
+                default:
+                    {
+                        throw new NotImplementedException();
+                    }
+            }
+        }
+
+        #endregion
+
         #region public methods
 
         public static FunctionLimiterLimit FromJSON(JObject iJSON)
@@ -90,6 +125,12 @@ namespace devoctomy.funk.core.Azure.Functions
         { 
             JObject pJOtLimit = JObject.Parse(iJSON);
             return (FromJSON(pJOtLimit));
+        }
+
+        public Boolean Exceeded(List<FunctionHit> iHits)
+        {
+            List<FunctionHit> pLisFiltered = new List<FunctionHit>(iHits.Where(i => i.Timestamp.Date > GetLimitEarliest()));
+            return (pLisFiltered.Count > Limit);
         }
 
         #endregion

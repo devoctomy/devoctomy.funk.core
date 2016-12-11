@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using devoctomy.funk.core.Membership;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,11 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public properties
 
-        public FunctionLimiterFunction this[String iKey]
+        public FunctionLimiterFunction this[String iFunctionName]
         {
             get
             {
-                return (null);
+                return (cDicFunctions[iFunctionName]);
             }
         }
 
@@ -56,8 +57,35 @@ namespace devoctomy.funk.core.Azure.Functions
             {
                 FunctionLimiterFunction pFLFCurFunction = FunctionLimiterFunction.FromJSON(curFunction);
                 pFLrLimiter.cLisFunctions.Add(pFLFCurFunction);
+                cDicFunctions.Add(pFLFCurFunction.Name, pFLFCurFunction);
             }
             return (pFLrLimiter);
+        }
+
+        public Boolean Allowed(Storage iStorage,
+            String iFunctionName,
+            String iSource)
+        {
+            if(cDicFunctions.ContainsKey(iFunctionName))
+            {
+                List<FunctionHit> pLisHits = iStorage.GetHits(iFunctionName,
+                    iSource,
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)));
+                FunctionLimiterFunction pFLFFunction = cDicFunctions[iFunctionName];
+                foreach(FunctionLimiterLimit curLimit in pFLFFunction.Limits)
+                {
+                    if(curLimit.Exceeded(pLisHits))
+                    {
+                        return (false);
+                    }
+                }
+            }
+            return (true);
+        }
+
+        public Boolean IsLimited(String iFunctionName)
+        {
+            return (cDicFunctions.ContainsKey(iFunctionName));
         }
 
         #endregion

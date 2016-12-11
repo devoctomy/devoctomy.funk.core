@@ -16,7 +16,7 @@ namespace devoctomy.funk.core.tests
 
         #region private objects
 
-        private String cStrStorageRootURL = String.Empty;
+        private String cStrTableStorageRootURL = String.Empty;
         private String cStrConnectionString = String.Empty;
         private String cStrDefaultProfile = String.Empty;
         private String cStrEmail = String.Empty;
@@ -34,7 +34,7 @@ namespace devoctomy.funk.core.tests
         {
             String pStrCreds = File.ReadAllText("../../../../azure/creds.json");
             JObject pJOtCreds = JObject.Parse(pStrCreds);
-            cStrStorageRootURL = pJOtCreds["StorageRootURL"].Value<String>();
+            cStrTableStorageRootURL = pJOtCreds["TableStorageRootURL"].Value<String>();
             cStrConnectionString = pJOtCreds["ConnectionString"].Value<String>();
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
             cStrDefaultProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
@@ -45,7 +45,7 @@ namespace devoctomy.funk.core.tests
             cStrActivationCode = CryptographyHelpers.RandomString(6);
 
             //Create the user
-             cStoStorage = new Storage(cStrStorageRootURL,
+             cStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage");
             cUsrUser = new User(cStrEmail, cStrUserName, 6);
             cUsrUser.ActivationCode = cStrActivationCode;

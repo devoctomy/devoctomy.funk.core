@@ -17,7 +17,7 @@ namespace devoctomy.funk.core.tests
 
         private String cStrEmail = String.Empty;
         private String cStrUserName = String.Empty;
-        private String cStrStorageRootURL = String.Empty;
+        private String cStrTableStorageRootURL = String.Empty;
         private String cStrConnectionString = String.Empty;
         private String cStrActivationCode = String.Empty;
         private String cStrOTP = String.Empty;
@@ -30,7 +30,7 @@ namespace devoctomy.funk.core.tests
         {
             String pStrCreds = File.ReadAllText("../../../../azure/creds.json");
             JObject pJOtCreds = JObject.Parse(pStrCreds);
-            cStrStorageRootURL = pJOtCreds["StorageRootURL"].Value<String>();
+            cStrTableStorageRootURL = pJOtCreds["TableStorageRootURL"].Value<String>();
             cStrConnectionString = pJOtCreds["ConnectionString"].Value<String>();
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
             cStrEmail = String.Format("{0}@{1}.com",
@@ -64,7 +64,7 @@ namespace devoctomy.funk.core.tests
         //[TestMethod]
         public async Task CreateUser(Boolean iFail)
         {
-            Storage pStoStorage = new Storage(cStrStorageRootURL,
+            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage");
             User pUsrUser = new User(cStrEmail, cStrUserName, 6);
             pUsrUser.ActivationCode = cStrActivationCode;
@@ -81,7 +81,7 @@ namespace devoctomy.funk.core.tests
         //[TestMethod]
         public async Task ActivateUser()
         {
-            Storage pStoStorage = new Storage(cStrStorageRootURL,
+            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if(pUsrUser != null)
@@ -97,7 +97,7 @@ namespace devoctomy.funk.core.tests
         //[TestMethod]
         public async Task RandomiseOTP()
         {
-            Storage pStoStorage = new Storage(cStrStorageRootURL,
+            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if (pUsrUser != null)
@@ -115,7 +115,7 @@ namespace devoctomy.funk.core.tests
         //[TestMethod]
         public async Task VerifyOTP()
         {
-            Storage pStoStorage = new Storage(cStrStorageRootURL,
+            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if (pUsrUser != null)

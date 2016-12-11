@@ -4,6 +4,7 @@
       "Name": "ServiceInfo",
       "Limits": [
         {
+          "Type":  "hit",
           "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,
@@ -15,6 +16,7 @@
       "Name": "BeginCreateAccount",
       "Limits": [
         {
+          "Type": "hit",
           "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,
@@ -26,6 +28,7 @@
       "Name": "RequestLogin",
       "Limits": [
         {
+          "Type": "hit",
           "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,

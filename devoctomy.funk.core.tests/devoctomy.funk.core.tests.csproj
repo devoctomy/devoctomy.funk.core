@@ -81,6 +81,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Hits.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="RSA.cs" />
     <Compile Include="SessionToken.cs" />

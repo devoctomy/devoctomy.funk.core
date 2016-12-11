@@ -4,6 +4,7 @@ using devoctomy.funk.core.Environment;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.IO;
+using System.Collections.Generic;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -16,24 +17,25 @@ namespace devoctomy.funk.core.Membership
 
         #region private objects
 
-        String cStrRootURL = String.Empty;
+        String cStrTableStorageRootURL = String.Empty;
         String cStrConnectionString = String.Empty;
         CloudStorageAccount cCSAAccount;
         CloudTable cCTeUsers;
         CloudTable cCTeProfiles;
+        CloudTable cCTeFunctionHits;
 
         #endregion
 
         #region public properties
 
         /// <summary>
-        /// Root url of the Azure storage account
+        /// Table storage root url of the Azure storage account
         /// </summary>
-        public String RootURL
+        public String TaleStorageRootURL
         {
-            get { return (cStrRootURL); }
+            get { return (cStrTableStorageRootURL); }
         }
-        
+
         /// <summary>
         /// Connection string for the Azure storage account
         /// </summary>
@@ -55,7 +57,7 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri UsersTableURI
         {
-            get { return (new Uri(String.Format("{0}/{1}", RootURL, "users"))); }
+            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "users"))); }
         }
 
         /// <summary>
@@ -63,7 +65,15 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri ProfilesTableURI
         {
-            get { return (new Uri(String.Format("{0}/{1}", RootURL, "profiles"))); }
+            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "profiles"))); }
+        }
+
+        /// <summary>
+        /// URI for the function hits Azure table storage endpoint
+        /// </summary>
+        public Uri FunctionHitsTableURI
+        {
+            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "functionhits"))); }
         }
 
         /// <summary>
@@ -82,6 +92,14 @@ namespace devoctomy.funk.core.Membership
             get { return (cCTeProfiles); }
         }
 
+        /// <summary>
+        /// Function hits table
+        /// </summary>
+        public CloudTable FunctionHitsTable
+        {
+            get { return (cCTeFunctionHits); }
+        }
+
         #endregion
 
         #region constructor / destructor
@@ -91,20 +109,87 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         /// <param name="iRootURL">Root Azure storage URL</param>
         /// <param name="iConnectionStringEnvironVarName">Environment variable name of the connection string to use</param>
-        public Storage(String iRootURL, 
+        public Storage(String iTableStorageRootURL,
             String iConnectionStringEnvironVarName)
         {
-            cStrRootURL = iRootURL;
-            if (cStrRootURL.EndsWith("/")) cStrRootURL.TrimEnd('/');
+            cStrTableStorageRootURL = iTableStorageRootURL;
+            if (cStrTableStorageRootURL.EndsWith("/")) cStrTableStorageRootURL.TrimEnd('/');
             cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iConnectionStringEnvironVarName);
             cCSAAccount = CloudStorageAccount.Parse(cStrConnectionString);
             cCTeUsers = new CloudTable(UsersTableURI, cCSAAccount.Credentials);
             cCTeProfiles = new CloudTable(ProfilesTableURI, cCSAAccount.Credentials);
+            cCTeFunctionHits = new CloudTable(FunctionHitsTableURI, cCSAAccount.Credentials);
         }
 
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Get all hits for a specific function, from a specific source
+        /// </summary>
+        /// <param name="iFunctionName">The name of the function to get the registered hits for</param>
+        /// <param name="iSource">The source of the request, for example ipaddress</param>
+        /// <param name="iEarliest">The earliest registered datetime to get</param>
+        /// <returns></returns>
+        public List<FunctionHit> GetHits(String iFunctionName,
+            String iSource,
+            DateTime iEarliest)
+        {
+            String pStrPartitionFilter = TableQuery.GenerateFilterCondition(
+               "PartitionKey",
+               QueryComparisons.Equal,
+               String.Format("{0}_{1}", iFunctionName, iSource));
+            String pStrTimestampFilter = TableQuery.GenerateFilterConditionForDate(
+               "Timestamp",
+               QueryComparisons.GreaterThanOrEqual,
+               iEarliest);
+            String pStrFilter = TableQuery.CombineFilters(pStrPartitionFilter, 
+                TableOperators.And,
+                pStrTimestampFilter);
+
+            TableQuery<FunctionHit> pTQyQuery = new TableQuery<FunctionHit>().Where(pStrFilter);
+            IEnumerable<FunctionHit> pIEeHits = FunctionHitsTable.ExecuteQuery<FunctionHit>(pTQyQuery);
+            List<FunctionHit> pLisHits = new List<FunctionHit>(pIEeHits);
+
+            return (pLisHits);
+        }
+
+        /// <summary>
+        /// Register a hit for a function
+        /// </summary>
+        /// <param name="iFunctionName">The name of the function to register the hit for</param>
+        /// <param name="iSource">The source of the request, for example ipaddress</param>
+        /// <returns></returns>
+        public Boolean RegisterHit(String iFunctionName,
+            String iSource)
+        {
+            FunctionHit pFHtHit = FunctionHit.Create(iFunctionName,
+                iSource);
+            FunctionHitsTable.CreateIfNotExists();
+            TableOperation pTOnInsert = TableOperation.Insert(pFHtHit);
+            TableResult pTRtResult;
+            try
+            {
+                pTRtResult = FunctionHitsTable.Execute(pTOnInsert);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                    default:
+                        {
+                            return (false);
+                        }
+                }
+            }
+            catch //(Exception ex)
+            {
+                return (false);
+            }
+        }
 
         /// <summary>
         /// Get a user from storage by its email address asynchronously
