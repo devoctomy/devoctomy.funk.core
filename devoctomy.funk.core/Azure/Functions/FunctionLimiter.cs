@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.core.Azure.Functions
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FunctionLimiter
     {
 
@@ -21,6 +24,11 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public properties
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFunctionName"></param>
+        /// <returns></returns>
         public FunctionLimiterFunction this[String iFunctionName]
         {
             get
@@ -29,6 +37,9 @@ namespace devoctomy.funk.core.Azure.Functions
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<FunctionLimiterFunction> Functions
         {
             get { return (cLisFunctions); }
@@ -38,6 +49,9 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region constructor / destructor
 
+        /// <summary>
+        /// 
+        /// </summary>
         private FunctionLimiter()
         {
             cLisFunctions = new List<FunctionLimiterFunction>();
@@ -48,6 +62,11 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iJSON"></param>
+        /// <returns></returns>
         public FunctionLimiter FromJSON(String iJSON)
         {
             JObject pJOtLimiter = JObject.Parse(iJSON);
@@ -62,6 +81,13 @@ namespace devoctomy.funk.core.Azure.Functions
             return (pFLrLimiter);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iStorage"></param>
+        /// <param name="iFunctionName"></param>
+        /// <param name="iSource"></param>
+        /// <returns></returns>
         public Boolean Allowed(Storage iStorage,
             String iFunctionName,
             String iSource)
@@ -83,6 +109,11 @@ namespace devoctomy.funk.core.Azure.Functions
             return (true);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFunctionName"></param>
+        /// <returns></returns>
         public Boolean IsLimited(String iFunctionName)
         {
             return (cDicFunctions.ContainsKey(iFunctionName));

@@ -410,7 +410,7 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 return (false);
             }
@@ -447,7 +447,7 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 return (false);
             }

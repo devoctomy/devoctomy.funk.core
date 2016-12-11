@@ -8,11 +8,19 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.core.Membership
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FunctionHit : TableEntity
     {
 
         #region constructor / destructor 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFunctionName"></param>
+        /// <param name="iSource"></param>
         private FunctionHit(String iFunctionName,
             String iSource)
         {
@@ -20,6 +28,9 @@ namespace devoctomy.funk.core.Membership
             RowKey = Guid.NewGuid().ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public FunctionHit()
         { }
 
@@ -27,6 +38,12 @@ namespace devoctomy.funk.core.Membership
 
         #region public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFunctionName"></param>
+        /// <param name="iUser"></param>
+        /// <returns></returns>
         public static FunctionHit Create(String iFunctionName,
             User iUser)
         {
@@ -35,6 +52,12 @@ namespace devoctomy.funk.core.Membership
             return (pFHtHit);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iFunctionName"></param>
+        /// <param name="iSource"></param>
+        /// <returns></returns>
         public static FunctionHit Create(String iFunctionName,
             String iSource)
         {

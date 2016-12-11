@@ -5,7 +5,6 @@
       "Limits": [
         {
           "Type":  "hit",
-          "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,
           "Limit": 20
@@ -17,7 +16,6 @@
       "Limits": [
         {
           "Type": "hit",
-          "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,
           "Limit": 2
@@ -29,7 +27,6 @@
       "Limits": [
         {
           "Type": "hit",
-          "Source": "requesterip",
           "Frequency": "hour",
           "Count": 1,
           "Limit": 5

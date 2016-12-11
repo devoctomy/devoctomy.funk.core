@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.core.Azure.Functions
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FunctionLimiterFunction
     {
 
@@ -20,11 +23,17 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public String Name
         {
             get { return (cStrName); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<FunctionLimiterLimit> Limits
         {
             get { return (cLisLimits); }
@@ -34,6 +43,9 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region constructor / destructor
 
+        /// <summary>
+        /// 
+        /// </summary>
         public FunctionLimiterFunction()
         {
             cLisLimits = new List<FunctionLimiterLimit>();
@@ -43,6 +55,11 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iJSON"></param>
+        /// <returns></returns>
         public static FunctionLimiterFunction FromJSON(JObject iJSON)
         {
             FunctionLimiterFunction pFLFFunction = new FunctionLimiterFunction();
@@ -56,6 +73,11 @@ namespace devoctomy.funk.core.Azure.Functions
             return (pFLFFunction);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iJSON"></param>
+        /// <returns></returns>
         public static FunctionLimiterFunction FromJSON(String iJSON)
         {
             JObject pJOtFunction = JObject.Parse(iJSON);

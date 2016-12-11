@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.core.Azure.Functions
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FunctionLimiterLimit
     {
 
@@ -18,13 +21,6 @@ namespace devoctomy.funk.core.Azure.Functions
         {
             none = 0,
             hit = 1
-        }
-
-        public enum SourcePoint
-        {
-            none = 0,
-            requesterip = 1,
-            sessiontoken = 2
         }
 
         public enum LimitFrequency
@@ -40,7 +36,6 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region private objects
 
-        private SourcePoint cSPtSource = SourcePoint.none;
         private LimitFrequency cLFyFrequency = LimitFrequency.none;
         private Int32 cIntFrequencyCount = 1;
         private Int32 cIntLimit = 1;
@@ -49,21 +44,25 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public properties
 
-        public SourcePoint Source
-        {
-            get { return (cSPtSource); }
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public LimitFrequency Frequency
         {
             get { return (cLFyFrequency); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Int32 FrequencyCount
         {
             get { return (cIntFrequencyCount); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Int32 Limit
         {
             get { return (cIntLimit); }
@@ -73,6 +72,9 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region constructor / destructor
 
+        /// <summary>
+        /// 
+        /// </summary>
         private FunctionLimiterLimit()
         { }
 
@@ -80,6 +82,10 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region private methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private DateTime GetLimitEarliest()
         {
             switch(Frequency)
@@ -111,22 +117,36 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iJSON"></param>
+        /// <returns></returns>
         public static FunctionLimiterLimit FromJSON(JObject iJSON)
         {
             FunctionLimiterLimit pFLLLimit = new FunctionLimiterLimit();
-            pFLLLimit.cSPtSource = (SourcePoint)Enum.Parse(typeof(SourcePoint), iJSON["Source"].Value<String>());
             pFLLLimit.cLFyFrequency = (LimitFrequency)Enum.Parse(typeof(LimitFrequency), iJSON["Frequency"].Value<String>());
             pFLLLimit.cIntFrequencyCount = iJSON["Count"].Value<Int32>();
             pFLLLimit.cIntLimit = iJSON["Limit"].Value<Int32>();
             return (pFLLLimit);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iJSON"></param>
+        /// <returns></returns>
         public static FunctionLimiterLimit FromJSON(String iJSON)
         { 
             JObject pJOtLimit = JObject.Parse(iJSON);
             return (FromJSON(pJOtLimit));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iHits"></param>
+        /// <returns></returns>
         public Boolean Exceeded(List<FunctionHit> iHits)
         {
             List<FunctionHit> pLisFiltered = new List<FunctionHit>(iHits.Where(i => i.Timestamp.Date > GetLimitEarliest()));
