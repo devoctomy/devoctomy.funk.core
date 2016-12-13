@@ -5,7 +5,7 @@
       "Limits": [
         {
           "Type":  "hit",
-          "Frequency": "hour",
+          "Frequency": "hours",
           "Count": 1,
           "Limit": 20
         }
@@ -16,7 +16,7 @@
       "Limits": [
         {
           "Type": "hit",
-          "Frequency": "hour",
+          "Frequency": "hours",
           "Count": 1,
           "Limit": 2
         }
@@ -27,7 +27,7 @@
       "Limits": [
         {
           "Type": "hit",
-          "Frequency": "hour",
+          "Frequency": "hours",
           "Count": 1,
           "Limit": 5
         }

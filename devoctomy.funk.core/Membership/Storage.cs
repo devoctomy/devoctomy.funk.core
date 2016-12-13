@@ -19,6 +19,7 @@ namespace devoctomy.funk.core.Membership
 
         String cStrTableStorageRootURL = String.Empty;
         String cStrConnectionString = String.Empty;
+        String cStrFunctionName = String.Empty;
         CloudStorageAccount cCSAAccount;
         CloudTable cCTeUsers;
         CloudTable cCTeProfiles;
@@ -42,6 +43,14 @@ namespace devoctomy.funk.core.Membership
         public String ConnectionString
         {
             get { return (cStrConnectionString); }
+        }
+
+        /// <summary>
+        /// Name of the current function
+        /// </summary>
+        public String FunctionName
+        {
+            get { return (cStrFunctionName); }
         }
 
         /// <summary>
@@ -100,6 +109,20 @@ namespace devoctomy.funk.core.Membership
             get { return (cCTeFunctionHits); }
         }
 
+        /// <summary>
+        /// The assets path
+        /// </summary>
+        public String FunctionAssetsPath
+        {
+            get
+            {
+                String pStrHome = EnvironmentHelpers.GetEnvironmentVariable("HOME");
+                if (!pStrHome.EndsWith("\\")) pStrHome += "\\";
+                String pStrFuncPath = pStrHome + $"site\\wwwroot\\{FunctionName}\\bin\\Assets\\";
+                return (pStrFuncPath);
+            }
+        }
+
         #endregion
 
         #region constructor / destructor
@@ -110,11 +133,13 @@ namespace devoctomy.funk.core.Membership
         /// <param name="iRootURL">Root Azure storage URL</param>
         /// <param name="iConnectionStringEnvironVarName">Environment variable name of the connection string to use</param>
         public Storage(String iTableStorageRootURL,
-            String iConnectionStringEnvironVarName)
+            String iConnectionStringEnvironVarName,
+            String iFunctionName)
         {
             cStrTableStorageRootURL = iTableStorageRootURL;
             if (cStrTableStorageRootURL.EndsWith("/")) cStrTableStorageRootURL.TrimEnd('/');
             cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iConnectionStringEnvironVarName);
+            cStrFunctionName = iFunctionName;
             cCSAAccount = CloudStorageAccount.Parse(cStrConnectionString);
             cCTeUsers = new CloudTable(UsersTableURI, cCSAAccount.Credentials);
             cCTeProfiles = new CloudTable(ProfilesTableURI, cCSAAccount.Credentials);
@@ -149,6 +174,7 @@ namespace devoctomy.funk.core.Membership
                 pStrTimestampFilter);
 
             TableQuery<FunctionHit> pTQyQuery = new TableQuery<FunctionHit>().Where(pStrFilter);
+            FunctionHitsTable.CreateIfNotExists();
             IEnumerable<FunctionHit> pIEeHits = FunctionHitsTable.ExecuteQuery<FunctionHit>(pTQyQuery);
             List<FunctionHit> pLisHits = new List<FunctionHit>(pIEeHits);
 
@@ -185,9 +211,13 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch //(Exception ex)
+            catch
             {
+#if (DEBUG)
+                throw;
+#else
                 return (false);
+#endif
             }
         }
 
@@ -296,9 +326,13 @@ namespace devoctomy.funk.core.Membership
                             }
                     }
                 }
-                catch //(Exception ex)
+                catch
                 {
+#if (DEBUG)
+                    throw;
+#else
                     return (false);
+#endif
                 }
             }
         }
@@ -330,9 +364,13 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch //(Exception ex)
+            catch
             {
+#if (DEBUG)
+                throw;
+#else
                 return (false);
+#endif
             }
         }
 
@@ -347,7 +385,7 @@ namespace devoctomy.funk.core.Membership
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
             if(pBlnCreatedTable)
             {
-                String pStrProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
+                String pStrProfile = File.ReadAllText(FunctionAssetsPath + "ProfileDefaults.json");
                 Profile pProProfile = new Profile(pStrProfile);
                 return (pProProfile);
             }
@@ -374,7 +412,7 @@ namespace devoctomy.funk.core.Membership
         /// <returns>True if successsful</returns>
         public Boolean CreateDefaultUserProfile(User iUser)
         {
-            String pStrDefaultProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
+            String pStrDefaultProfile = File.ReadAllText(FunctionAssetsPath + "ProfileDefaults.json");
             Profile pProProfile = new Profile(pStrDefaultProfile);
             return (InsertProfile(iUser,
                 pProProfile));
@@ -410,9 +448,13 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch //(Exception ex)
+            catch
             {
+#if (DEBUG)
+                throw;
+#else
                 return (false);
+#endif
             }
         }
 
@@ -447,9 +489,13 @@ namespace devoctomy.funk.core.Membership
                         }
                 }
             }
-            catch //(Exception ex)
+            catch
             {
+#if (DEBUG)
+                throw;
+#else
                 return (false);
+#endif
             }
         }
 

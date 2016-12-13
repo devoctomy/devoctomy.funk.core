@@ -46,7 +46,8 @@ namespace devoctomy.funk.core.tests
 
             //Create the user
              cStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             cUsrUser = new User(cStrEmail, cStrUserName, 6);
             cUsrUser.ActivationCode = cStrActivationCode;
             Assert.IsTrue(cUsrUser.Insert(cStoStorage));

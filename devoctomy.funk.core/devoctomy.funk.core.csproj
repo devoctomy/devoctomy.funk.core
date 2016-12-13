@@ -90,7 +90,9 @@
     <Content Include="Assets\ProfileDefaults.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Assets\FunctionLimiter.json" />
+    <Content Include="Assets\FunctionLimits.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>

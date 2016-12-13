@@ -67,7 +67,7 @@ namespace devoctomy.funk.core.Azure.Functions
         /// </summary>
         /// <param name="iJSON"></param>
         /// <returns></returns>
-        public FunctionLimiter FromJSON(String iJSON)
+        public static FunctionLimiter FromJSON(String iJSON)
         {
             JObject pJOtLimiter = JObject.Parse(iJSON);
             FunctionLimiter pFLrLimiter = new FunctionLimiter();
@@ -76,7 +76,7 @@ namespace devoctomy.funk.core.Azure.Functions
             {
                 FunctionLimiterFunction pFLFCurFunction = FunctionLimiterFunction.FromJSON(curFunction);
                 pFLrLimiter.cLisFunctions.Add(pFLFCurFunction);
-                cDicFunctions.Add(pFLFCurFunction.Name, pFLFCurFunction);
+                pFLrLimiter.cDicFunctions.Add(pFLFCurFunction.Name, pFLFCurFunction);
             }
             return (pFLrLimiter);
         }

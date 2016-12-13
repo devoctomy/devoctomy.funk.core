@@ -34,7 +34,8 @@ namespace devoctomy.funk.core.tests
 
             //Init storage
             cStoStorage = new Storage(cStrTableStorageRootURL,
-               "AzureWebJobsStorage");
+               "AzureWebJobsStorage",
+               "Test");
         }
 
         #endregion
@@ -51,7 +52,8 @@ namespace devoctomy.funk.core.tests
         public void RegisterAndGet10Hits()
         {
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             for(Int32 curHit = 1; curHit <= 10; curHit++)
             {
                 pStoStorage.RegisterHit("TestFunction", 

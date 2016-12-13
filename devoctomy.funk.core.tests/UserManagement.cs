@@ -65,7 +65,8 @@ namespace devoctomy.funk.core.tests
         public async Task CreateUser(Boolean iFail)
         {
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             User pUsrUser = new User(cStrEmail, cStrUserName, 6);
             pUsrUser.ActivationCode = cStrActivationCode;
             if(iFail)
@@ -82,7 +83,8 @@ namespace devoctomy.funk.core.tests
         public async Task ActivateUser()
         {
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if(pUsrUser != null)
             {
@@ -98,7 +100,8 @@ namespace devoctomy.funk.core.tests
         public async Task RandomiseOTP()
         {
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if (pUsrUser != null)
             {
@@ -116,7 +119,8 @@ namespace devoctomy.funk.core.tests
         public async Task VerifyOTP()
         {
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage");
+                "AzureWebJobsStorage",
+                "Test");
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if (pUsrUser != null)
             {
