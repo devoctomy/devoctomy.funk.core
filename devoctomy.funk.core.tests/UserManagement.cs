@@ -57,8 +57,6 @@ namespace devoctomy.funk.core.tests
             await CreateUser(false);
             await CreateUser(true);
             await ActivateUser();
-            await RandomiseOTP();
-            await VerifyOTP();
         }
 
         //[TestMethod]
@@ -89,43 +87,6 @@ namespace devoctomy.funk.core.tests
             if(pUsrUser != null)
             {
                 Assert.IsTrue(await pUsrUser.Activate(pStoStorage, cStrActivationCode));
-            }
-            else
-            {
-                Assert.Fail("Failed to get user '{0}' from storage.", cStrEmail);
-            }
-        }
-
-        //[TestMethod]
-        public async Task RandomiseOTP()
-        {
-            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage",
-                "Test");
-            User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
-            if (pUsrUser != null)
-            {
-                pUsrUser.OTP = cStrOTP;
-                pUsrUser.OTPRequestedAt = DateTime.UtcNow;
-                Assert.IsTrue(await pStoStorage.Replace(pUsrUser));
-            }
-            else
-            {
-                Assert.Fail("Failed to get user '{0}' from storage.", cStrEmail);
-            }
-        }
-
-        //[TestMethod]
-        public async Task VerifyOTP()
-        {
-            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage",
-                "Test");
-            User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
-            if (pUsrUser != null)
-            {
-                UserLoginResult pULRLogin = await pUsrUser.Login(pStoStorage, cStrOTP, new TimeSpan(0, 0, 30));
-                Assert.IsTrue(pULRLogin.Success);
             }
             else
             {

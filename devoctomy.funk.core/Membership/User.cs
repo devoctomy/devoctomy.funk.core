@@ -35,21 +35,6 @@ namespace devoctomy.funk.core.Membership
         public Boolean Activated { get; set; }
 
         /// <summary>
-        /// Date / Time the last OTP was requested
-        /// </summary>
-        public DateTime OTPRequestedAt { get; set; }
-
-        /// <summary>
-        /// OTP / One Time Password
-        /// </summary>
-        public String OTP { get; set; }
-
-        /// <summary>
-        /// Number of times this user has attempted to login incorrectly, in a row
-        /// </summary>
-        public Int32 IncorrectLoginAttempts { get; set; }
-
-        /// <summary>
         /// This account is locked, either from incorrect login attemps or administrative action
         /// </summary>
         public Boolean Locked { get; set; }
@@ -79,8 +64,6 @@ namespace devoctomy.funk.core.Membership
             UserName = iUserName;
             RandomiseActivationCode(iActivationCodeLength);
             Activated = false;
-            OTPRequestedAt = new DateTime(1982,4,3);
-            OTP = string.Empty;
         }
 
         #endregion
@@ -115,62 +98,6 @@ namespace devoctomy.funk.core.Membership
         public void RandomiseActivationCode(Int32 iLength)
         {
             ActivationCode = CryptographyHelpers.RandomString(iLength);
-        }
-
-        /// <summary>
-        /// Randomises the one time password, called on login request
-        /// </summary>
-        /// <param name="iStorage">The storage instance to use</param>
-        /// <param name="iLength">The length in characters of the newly generated one time password</param>
-        /// <returns>True if the OTP was randomised and storage was updated</returns>
-        public async Task<Boolean> RandomiseOTP(Storage iStorage, 
-            Int32 iLength)
-        {
-            OTP = CryptographyHelpers.RandomString(iLength);
-            OTPRequestedAt = DateTime.UtcNow;
-            return (await iStorage.Replace(this));
-        }
-
-        /// <summary>
-        /// Attempt to login the user, the OTP provided must match the one in storage.
-        /// </summary>
-        /// <param name="iStorage">The storage instance to use</param>
-        /// <param name="iOTP">The one time password provided during the login process by the user</param>
-        /// <param name="iSessionLifeSpan">The lifespan of the session token to generate upon successful login</param>
-        /// <returns>Thue if the OTP matched and storage was updated</returns>
-        public async Task<UserLoginResult> Login(Storage iStorage, 
-            String iOTP,
-            TimeSpan iSessionLifeSpan)
-        {
-            UserLoginResult pULRResult = new UserLoginResult();
-            if (!Locked && OTP == iOTP)
-            {
-                OTP = String.Empty;
-                IncorrectLoginAttempts = 0;
-                if (await iStorage.Replace(this))
-                {
-                    pULRResult.Success = true;
-                    pULRResult.SessionToken = new SessionToken(RowKey,
-                        iSessionLifeSpan);
-                }
-            }
-            else
-            {
-                if(Locked)
-                {
-                    pULRResult.AccountPreviouslyLocked = true;
-                }
-                else
-                {
-                    IncorrectLoginAttempts += 1;
-                    if (IncorrectLoginAttempts >= 3)
-                    {
-                        Locked = true;
-                    }
-                    await iStorage.Replace(this);
-                }
-            }
-            return (pULRResult);
         }
 
         /// <summary>

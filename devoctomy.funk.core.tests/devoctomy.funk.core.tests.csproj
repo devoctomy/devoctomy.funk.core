@@ -84,7 +84,6 @@
     <Compile Include="Hits.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="RSA.cs" />
-    <Compile Include="SessionToken.cs" />
     <Compile Include="UserManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
