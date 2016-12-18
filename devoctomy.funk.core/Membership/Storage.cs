@@ -282,14 +282,27 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
+        /// Replaces a user in the storage system asynchronously
+        /// </summary>
+        /// <param name="iUser">User to replace</param>
+        /// <returns>True if the operation was successful</returns>
+        public async Task<Boolean> ReplaceAsync(User iUser)
+        {
+            TableOperation pTOnReplace = TableOperation.Replace(iUser);
+            TableResult pTRtResult = await UsersTable.ExecuteAsync(pTOnReplace);
+            return (pTRtResult.HttpStatusCode == 200 ||
+                pTRtResult.HttpStatusCode == 204);
+        }
+
+        /// <summary>
         /// Replaces a user in the storage system
         /// </summary>
         /// <param name="iUser">User to replace</param>
         /// <returns>True if the operation was successful</returns>
-        public async Task<Boolean> Replace(User iUser)
+        public Boolean Replace(User iUser)
         {
             TableOperation pTOnReplace = TableOperation.Replace(iUser);
-            TableResult pTRtResult = await UsersTable.ExecuteAsync(pTOnReplace);
+            TableResult pTRtResult = UsersTable.Execute(pTOnReplace);
             return (pTRtResult.HttpStatusCode == 200 ||
                 pTRtResult.HttpStatusCode == 204);
         }

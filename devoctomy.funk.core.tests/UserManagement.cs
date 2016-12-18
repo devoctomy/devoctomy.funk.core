@@ -65,7 +65,7 @@ namespace devoctomy.funk.core.tests
             Storage pStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage",
                 "Test");
-            User pUsrUser = new User(cStrEmail, cStrUserName, 6);
+            User pUsrUser = new User(cStrEmail, 6);
             pUsrUser.ActivationCode = cStrActivationCode;
             if(iFail)
             {
@@ -86,7 +86,7 @@ namespace devoctomy.funk.core.tests
             User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
             if(pUsrUser != null)
             {
-                Assert.IsTrue(await pUsrUser.Activate(pStoStorage, cStrActivationCode));
+                Assert.IsTrue(await pUsrUser.ActivateAsync(pStoStorage, cStrActivationCode));
             }
             else
             {

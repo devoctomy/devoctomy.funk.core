@@ -41,14 +41,13 @@ namespace devoctomy.funk.core.tests
             cStrEmail = String.Format("{0}@{1}.com",
                 CryptographyHelpers.RandomString(12),
                 CryptographyHelpers.RandomString(12));
-            cStrUserName = CryptographyHelpers.RandomString(12);
             cStrActivationCode = CryptographyHelpers.RandomString(6);
 
             //Create the user
              cStoStorage = new Storage(cStrTableStorageRootURL,
                 "AzureWebJobsStorage",
                 "Test");
-            cUsrUser = new User(cStrEmail, cStrUserName, 6);
+            cUsrUser = new User(cStrEmail, 6);
             cUsrUser.ActivationCode = cStrActivationCode;
             Assert.IsTrue(cUsrUser.Insert(cStoStorage));
         }
