@@ -39,6 +39,18 @@ namespace devoctomy.funk.core.Extensions
             }
         }
 
+        public static Dictionary<String, String> ToDictionary(this String iString)
+        {
+            Dictionary<String, String> pDicKeyPairs = new Dictionary<String, String>();
+            String[] pStrKeyPairs = iString.Split(',');
+            foreach(String curPair in pStrKeyPairs)
+            {
+                String[] pStrKeyPair = curPair.Trim().Split('=');
+                pDicKeyPairs.Add(pStrKeyPair[0], pStrKeyPair[1]);
+            }
+            return (pDicKeyPairs);
+        }
+
         #endregion
 
     }

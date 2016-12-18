@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.IO;
 using System.Collections.Generic;
+using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -130,13 +131,14 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// Construct an instance of the membership storage system
         /// </summary>
-        /// <param name="iRootURL">Root Azure storage URL</param>
+        /// <param name="iTableStorageRootURLEnvironVarName">Root Azure table storage URL</param>
         /// <param name="iConnectionStringEnvironVarName">Environment variable name of the connection string to use</param>
-        public Storage(String iTableStorageRootURL,
+        /// <param name="iFunctionName">The name of the function</param>
+        public Storage(String iTableStorageRootURLEnvironVarName,
             String iConnectionStringEnvironVarName,
             String iFunctionName)
         {
-            cStrTableStorageRootURL = iTableStorageRootURL;
+            cStrTableStorageRootURL = EnvironmentHelpers.GetEnvironmentVariable(iTableStorageRootURLEnvironVarName);
             if (cStrTableStorageRootURL.EndsWith("/")) cStrTableStorageRootURL.TrimEnd('/');
             cStrConnectionString = EnvironmentHelpers.GetEnvironmentVariable(iConnectionStringEnvironVarName);
             cStrFunctionName = iFunctionName;
@@ -497,6 +499,21 @@ namespace devoctomy.funk.core.Membership
                 return (false);
 #endif
             }
+        }
+
+        /// <summary>
+        /// Queue a message into the desired Azure Queue
+        /// </summary>
+        /// <param name="iMessage">The message to queue, typically this should be JSON</param>
+        /// <param name="iQueueName">The name of the queue to queue the message in</param>
+        public void QueueMessage(String iMessage, 
+            String iQueueName)
+        {
+            CloudQueueClient queueClient = cCSAAccount.CreateCloudQueueClient();
+            CloudQueue pCQeQueue = queueClient.GetQueueReference(iQueueName);
+            pCQeQueue.CreateIfNotExists();
+            CloudQueueMessage pCQMMessage = new CloudQueueMessage(iMessage);
+            pCQeQueue.AddMessage(pCQMMessage);
         }
 
         #endregion

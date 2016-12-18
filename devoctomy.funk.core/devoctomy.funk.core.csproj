@@ -68,7 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Azure\Authentication\FacebookProvider.cs" />
     <Compile Include="Azure\Functions\FunctionLimiter.cs" />
     <Compile Include="Azure\Functions\FunctionLimiterFunction.cs" />
     <Compile Include="Azure\Functions\FunctionLimiterLimit.cs" />
