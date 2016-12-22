@@ -131,7 +131,8 @@ namespace devoctomy.funk.client
         }
 
         public async Task<HttpResponseMessage> AuthenticatedRequestAsync(String iMethod,
-            String iRequestURI)
+            String iRequestURI,
+            String iContent = "")
         {
             cHCtClient.DefaultRequestHeaders.Remove("x-zumo-auth");
             cHCtClient.DefaultRequestHeaders.Add("x-zumo-auth", cStrAuthToken);
@@ -140,6 +141,11 @@ namespace devoctomy.funk.client
                 case "GET":
                     {
                         HttpResponseMessage pHRMResponse = await cHCtClient.GetAsync(iRequestURI);
+                        return (pHRMResponse);
+                    }
+                case "PUT":
+                    {
+                        HttpResponseMessage pHRMResponse = await cHCtClient.PutAsync(iRequestURI, new StringContent(iContent));
                         return (pHRMResponse);
                     }
                 default:

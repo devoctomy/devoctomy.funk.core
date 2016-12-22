@@ -1,4 +1,7 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿#if !WINDOWS_UWP
+    using Microsoft.WindowsAzure.Storage.Table;
+#endif
+
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -126,13 +129,14 @@ namespace devoctomy.funk.core.Membership
                             curCategory,
                             curSubCategory,
                             curField);
-                        EntityProperty pEPyField = new EntityProperty(cDicParams[curCategory][curSubCategory][curField]);
-                        pLisKeys.Add(pStrKey);
+                       pLisKeys.Add(pStrKey);
                     }
                 }
             }
             return (pLisKeys);
         }
+
+#if !WINDOWS_UWP
 
         /// <summary>
         /// Parse the profile from a dynamic table entity
@@ -161,6 +165,8 @@ namespace devoctomy.funk.core.Membership
             }
             return (pProProfile);
         }
+
+#endif
 
         /// <summary>
         /// Get the value of a specific field
@@ -191,6 +197,8 @@ namespace devoctomy.funk.core.Membership
             cDicParams[iCategory][iSubCategory][iField] = iValue;
         }
 
+#if !WINDOWS_UWP
+
         /// <summary>
         /// Convert this profile instance to a dynamic table entity ready for inserting into storage
         /// </summary>
@@ -219,6 +227,8 @@ namespace devoctomy.funk.core.Membership
             }
             return (pDTEEntity);
         }
+
+#endif
 
         /// <summary>
         /// Serialise this profile instance as a JSON string
@@ -256,6 +266,8 @@ namespace devoctomy.funk.core.Membership
             return (pJOtJSON.ToString(iFormatting));
         }
 
+#if !WINDOWS_UWP
+
         /// <summary>
         /// Inserts this profile instance into storage, under the provided user
         /// </summary>
@@ -268,6 +280,8 @@ namespace devoctomy.funk.core.Membership
             return(iStorage.ReplaceProfile(iUser,
                 this));
         }
+
+#endif
 
         /// <summary>
         /// Set values on this profile instance with values from another profile instance.  Only replaces values with matching keys.
@@ -285,7 +299,7 @@ namespace devoctomy.funk.core.Membership
             }
         }
 
-        #endregion
+#endregion
 
     }
 

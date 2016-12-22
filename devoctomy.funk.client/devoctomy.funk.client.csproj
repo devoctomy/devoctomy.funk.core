@@ -107,10 +107,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\devoctomy.funk.core\Membership\Profile.cs">
+      <Link>Membership\Profile.cs</Link>
+    </Compile>
     <Compile Include="AzureFunctionClientBase.cs" />
     <Compile Include="AzureFunctionClientResponseBase.cs" />
     <Compile Include="FunkClient.cs" />
     <Compile Include="FunkClientManagementExtensions.cs" />
+    <Compile Include="FunkManagementGetProfileResponse.cs" />
     <Compile Include="FunkManagementServiceInfoResponse.cs" />
     <Compile Include="FunkServiceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
