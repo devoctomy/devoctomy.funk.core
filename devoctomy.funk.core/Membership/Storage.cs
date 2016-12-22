@@ -401,7 +401,7 @@ namespace devoctomy.funk.core.Membership
             if(pBlnCreatedTable)
             {
                 String pStrProfile = File.ReadAllText(FunctionAssetsPath + "ProfileDefaults.json");
-                Profile pProProfile = new Profile(pStrProfile);
+                Profile pProProfile = Profile.FromJSON(pStrProfile);
                 return (pProProfile);
             }
             else
@@ -428,7 +428,7 @@ namespace devoctomy.funk.core.Membership
         public Boolean CreateDefaultUserProfile(User iUser)
         {
             String pStrDefaultProfile = File.ReadAllText(FunctionAssetsPath + "ProfileDefaults.json");
-            Profile pProProfile = new Profile(pStrDefaultProfile);
+            Profile pProProfile = Profile.FromJSON(pStrDefaultProfile);
             return (InsertProfile(iUser,
                 pProProfile));
         }

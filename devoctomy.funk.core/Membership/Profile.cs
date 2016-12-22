@@ -57,35 +57,56 @@ namespace devoctomy.funk.core.Membership
         private Profile()
         { }
 
+        #endregion
+
+        #region public methods
+
         /// <summary>
         /// Constructs an instance of Profile using the provided JSON string
         /// </summary>
-        /// <param name="iDefaultJSON">JSON string representation of the profile to create</param>
-        public Profile(String iDefaultJSON)
+        /// <param name="iJSON">JSON string representation of the profile to create</param>
+        public static Profile FromJSON(String iJSON)
         {
-            cDicParams = new Dictionary<String, Dictionary<String, Dictionary<String, String>>>();
-            JObject pJOtDefaults = JObject.Parse(iDefaultJSON);
+            Profile pProProfile = new Profile();
+            pProProfile.cDicParams = new Dictionary<String, Dictionary<String, Dictionary<String, String>>>();
+            JObject pJOtDefaults = JObject.Parse(iJSON);
             foreach (JObject curCategory in pJOtDefaults["Categories"].Value<JArray>())
             {
                 String pStrCategory = curCategory["Name"].Value<String>();
-                cDicParams.Add(pStrCategory, new Dictionary<String, Dictionary<String, String>>());
+                pProProfile.cDicParams.Add(pStrCategory, new Dictionary<String, Dictionary<String, String>>());
                 foreach (JObject curSubCategory in curCategory["SubCategories"].Value<JArray>())
                 {
                     String pStrSubCategory = curSubCategory["Name"].Value<String>();
-                    cDicParams[pStrCategory].Add(pStrSubCategory, new Dictionary<String, String>());
+                    pProProfile.cDicParams[pStrCategory].Add(pStrSubCategory, new Dictionary<String, String>());
                     foreach (JObject curField in curSubCategory["Fields"].Value<JArray>())
                     {
                         String pStrFieldName = curField["Name"].Value<String>();
                         String pStrDefaultValue = curField["Value"].Value<String>();
-                        cDicParams[pStrCategory][pStrSubCategory].Add(pStrFieldName, pStrDefaultValue);
+                        pProProfile.cDicParams[pStrCategory][pStrSubCategory].Add(pStrFieldName, pStrDefaultValue);
                     }
                 }
             }
+            return (pProProfile);
         }
 
-        #endregion
-
-        #region public methods
+        /// <summary>
+        /// Checks whether a key exists in this profile instance
+        /// </summary>
+        /// <param name="iKey">Key to check the existance of</param>
+        /// <returns></returns>
+        public Boolean HasKey(String iKey)
+        {
+            String[] pStrKeyParts = iKey.Split('_');
+            if (pStrKeyParts.Length != 3) throw new ArgumentException("Key must contain 3 parts, category, sub category and value.  For example 'category_subcategory_value'.", "iKey");
+            if(cDicParams.ContainsKey(pStrKeyParts[0]))
+            {
+                if(cDicParams[pStrKeyParts[0]].ContainsKey(pStrKeyParts[1]))
+                {
+                    return (cDicParams[pStrKeyParts[0]][pStrKeyParts[1]].ContainsKey(pStrKeyParts[2]));
+                }
+            }
+            return (false);
+        }
 
         /// <summary>
         /// Get a list of all profile keys, delimited by an underscore.  These can be passed into the
@@ -246,6 +267,22 @@ namespace devoctomy.funk.core.Membership
         {
             return(iStorage.ReplaceProfile(iUser,
                 this));
+        }
+
+        /// <summary>
+        /// Set values on this profile instance with values from another profile instance.  Only replaces values with matching keys.
+        /// </summary>
+        /// <param name="iSource">The source profile to get the values from</param>
+        public void SetFrom(Profile iSource)
+        {
+            List<String> pLisSourceKeys = iSource.GetAllKeys();
+            foreach(String curKey in pLisSourceKeys)
+            {
+                if(HasKey(curKey))
+                {
+                    this[curKey] = iSource[curKey];
+                }
+            }
         }
 
         #endregion

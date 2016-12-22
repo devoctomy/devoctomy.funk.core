@@ -36,6 +36,8 @@ namespace devoctomy.funk.core.tests
             JObject pJOtCreds = JObject.Parse(pStrCreds);
             cStrTableStorageRootURL = pJOtCreds["TableStorageRootURL"].Value<String>();
             cStrConnectionString = pJOtCreds["ConnectionString"].Value<String>();
+            EnvironmentHelpers.SetEnvironmentVariable("HOME", @"C:\Temp", EnvironmentVariableTarget.Process);
+            EnvironmentHelpers.SetEnvironmentVariable("TableStorageRootURL", cStrTableStorageRootURL, EnvironmentVariableTarget.Process);
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
             cStrDefaultProfile = File.ReadAllText(@"Assets\ProfileDefaults.json");
             cStrEmail = String.Format("{0}@{1}.com",
@@ -44,7 +46,7 @@ namespace devoctomy.funk.core.tests
             cStrActivationCode = CryptographyHelpers.RandomString(6);
 
             //Create the user
-             cStoStorage = new Storage(cStrTableStorageRootURL,
+             cStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
                 "Test");
             cUsrUser = new User(cStrEmail, 6);
@@ -55,9 +57,9 @@ namespace devoctomy.funk.core.tests
         [TestMethod()]
         public void ProfileFromJSONToJSONAndBackAgain()
         {
-            Membership.Profile pProProfile = new Membership.Profile(cStrDefaultProfile);
+            Membership.Profile pProProfile = Membership.Profile.FromJSON(cStrDefaultProfile);
             String pStrProfile = pProProfile.ToJSON(Newtonsoft.Json.Formatting.Indented);
-            pProProfile = new Membership.Profile(pStrProfile);
+            pProProfile = Membership.Profile.FromJSON(pStrProfile);
         }
 
         [TestMethod()]
@@ -87,6 +89,26 @@ namespace devoctomy.funk.core.tests
                 String pStrValue = pProProfile[curKey];
                 String pStrExpecting = pDicNewValues[curKey];
                 Assert.IsTrue(pStrValue.Equals(pStrExpecting));
+            }
+        }
+
+        [TestMethod()]
+        public void SetProfile()
+        {
+            Membership.Profile pProSource = Membership.Profile.FromJSON(cStrDefaultProfile);
+            List<String> pLisAllKeys = pProSource.GetAllKeys();
+            Dictionary<String, String> pDicNewValues = new Dictionary<String, String>();
+            foreach(String curKey in pLisAllKeys)
+            {
+                pDicNewValues.Add(curKey, Guid.NewGuid().ToString());
+                pProSource[curKey] = pDicNewValues[curKey];
+            }
+ 
+            Membership.Profile pProTarget = Membership.Profile.FromJSON(cStrDefaultProfile);
+            pProTarget.SetFrom(pProSource);
+            foreach (String curKey in pLisAllKeys)
+            {
+                Assert.IsTrue(pProTarget[curKey] == pDicNewValues[curKey]);
             }
         }
 
