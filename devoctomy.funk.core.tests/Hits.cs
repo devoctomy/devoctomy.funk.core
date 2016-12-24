@@ -19,6 +19,7 @@ namespace devoctomy.funk.core.tests
         private String cStrTableStorageRootURL = String.Empty;
         private String cStrConnectionString = String.Empty;
         private Storage cStoStorage;
+        private String cStrSource = String.Empty;
 
         #endregion
 
@@ -33,6 +34,7 @@ namespace devoctomy.funk.core.tests
             EnvironmentHelpers.SetEnvironmentVariable("HOME", @"C:\Temp", EnvironmentVariableTarget.Process);
             EnvironmentHelpers.SetEnvironmentVariable("TableStorageRootURL", cStrTableStorageRootURL, EnvironmentVariableTarget.Process);
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
+            cStrSource = CryptographyHelpers.RandomString(8);
 
             //Init storage
             cStoStorage = new Storage("TableStorageRootURL",
@@ -55,13 +57,13 @@ namespace devoctomy.funk.core.tests
         {
             for(Int32 curHit = 1; curHit <= 10; curHit++)
             {
-                cStoStorage.RegisterHit("TestFunction", 
-                    "127.0.0.1");
-            }
+                cStoStorage.RegisterHit("TestFunction",
+                    cStrSource);
+            }         
             List<FunctionHit> pLisHits = cStoStorage.GetHits("TestFunction",
-                "127.0.0.1",
+                cStrSource,
                 DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0)));
-            Assert.IsTrue(pLisHits.Count > 10);
+            Assert.IsTrue(pLisHits.Count == 10);
         }
 
         #endregion
