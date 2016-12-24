@@ -6,6 +6,8 @@ using devoctomy.funk.core.Membership;
 using System.Threading.Tasks;
 using devoctomy.funk.core.Environment;
 using devoctomy.funk.core.Cryptography;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace devoctomy.funk.core.tests
 {
@@ -32,6 +34,8 @@ namespace devoctomy.funk.core.tests
             JObject pJOtCreds = JObject.Parse(pStrCreds);
             cStrTableStorageRootURL = pJOtCreds["TableStorageRootURL"].Value<String>();
             cStrConnectionString = pJOtCreds["ConnectionString"].Value<String>();
+            EnvironmentHelpers.SetEnvironmentVariable("HOME", @"C:\Temp", EnvironmentVariableTarget.Process);
+            EnvironmentHelpers.SetEnvironmentVariable("TableStorageRootURL", cStrTableStorageRootURL, EnvironmentVariableTarget.Process);
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
             cStrEmail = String.Format("{0}@{1}.com",
                 CryptographyHelpers.RandomString(12),
@@ -39,6 +43,18 @@ namespace devoctomy.funk.core.tests
             cStrUserName = CryptographyHelpers.RandomString(12);
             cStrActivationCode = CryptographyHelpers.RandomString(6);
             cStrOTP = CryptographyHelpers.RandomString(6);
+        }
+
+        #endregion
+
+        #region private methods
+
+        private ClaimsPrincipal GetTestUserPrincipal()
+        {
+            GenericIdentity pGIyTestUser = new GenericIdentity("Test User");
+            pGIyTestUser.AddClaim(new Claim(ClaimTypes.Email, cStrEmail));
+            ClaimsPrincipal pCPlTestUser = new ClaimsPrincipal(pGIyTestUser);
+            return (pCPlTestUser);
         }
 
         #endregion
@@ -57,15 +73,16 @@ namespace devoctomy.funk.core.tests
             await CreateUser(false);
             await CreateUser(true);
             await ActivateUser();
+            //DeleteUser?
         }
 
         //[TestMethod]
         public async Task CreateUser(Boolean iFail)
         {
-            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
+            Storage pStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
                 "Test");
-            User pUsrUser = new User(cStrEmail, 6);
+            User pUsrUser = new User(GetTestUserPrincipal(), 6);
             pUsrUser.ActivationCode = cStrActivationCode;
             if(iFail)
             {
@@ -80,11 +97,11 @@ namespace devoctomy.funk.core.tests
         //[TestMethod]
         public async Task ActivateUser()
         {
-            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
+            Storage pStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
                 "Test");
-            User pUsrUser = await pStoStorage.GetUserAsync(cStrEmail);
-            if(pUsrUser != null)
+            User pUsrUser = await pStoStorage.GetUserAsync(GetTestUserPrincipal());
+            if (pUsrUser != null)
             {
                 Assert.IsTrue(await pUsrUser.ActivateAsync(pStoStorage, cStrActivationCode));
             }

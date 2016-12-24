@@ -7,6 +7,8 @@ using devoctomy.funk.core.Cryptography;
 using devoctomy.funk.core.Membership;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace devoctomy.funk.core.tests
 {
@@ -24,6 +26,18 @@ namespace devoctomy.funk.core.tests
         private String cStrActivationCode = String.Empty;
         private Storage cStoStorage;
         private User cUsrUser;
+
+        #endregion
+
+        #region private methods
+
+        private ClaimsPrincipal GetTestUserPrincipal()
+        {
+            GenericIdentity pGIyTestUser = new GenericIdentity("Test User");
+            pGIyTestUser.AddClaim(new Claim(ClaimTypes.Email, cStrEmail));
+            ClaimsPrincipal pCPlTestUser = new ClaimsPrincipal(pGIyTestUser);
+            return (pCPlTestUser);
+        }
 
         #endregion
 
@@ -49,7 +63,7 @@ namespace devoctomy.funk.core.tests
              cStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
                 "Test");
-            cUsrUser = new User(cStrEmail, 6);
+            cUsrUser = new User(GetTestUserPrincipal(), 6);
             cUsrUser.ActivationCode = cStrActivationCode;
             Assert.IsTrue(cUsrUser.Insert(cStoStorage));
         }

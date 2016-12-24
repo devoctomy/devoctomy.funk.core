@@ -74,6 +74,7 @@
     <Compile Include="Azure\Table\AzureTableHelpers.cs" />
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
+    <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Membership\FunctionHit.cs" />
     <Compile Include="Membership\Profile.cs" />

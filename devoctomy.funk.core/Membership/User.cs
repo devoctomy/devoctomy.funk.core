@@ -1,6 +1,8 @@
 ﻿using devoctomy.funk.core.Cryptography;
+using devoctomy.funk.core.Extensions;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace devoctomy.funk.core.Membership
@@ -49,12 +51,12 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         /// <param name="iEmail">Email address of the user to create, this must be unique</param>
         /// <param name="iActivationCodeLength">Length of activation code to create</param>
-        public User(String iEmail, 
+        public User(ClaimsPrincipal iUserPrincipal, 
             Int32 iActivationCodeLength)
         {
             CreatedAt = DateTime.UtcNow;
-            RowKey = iEmail;
-            PartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
+            RowKey = iUserPrincipal.GetUserRowKey(ClaimsPrincipalExtensions.KeySource.email);
+            PartitionKey = iUserPrincipal.GetUserPartitionKey(ClaimsPrincipalExtensions.KeySource.email);
             RandomiseActivationCode(iActivationCodeLength);
             Activated = false;
         }

@@ -30,10 +30,12 @@ namespace devoctomy.funk.core.tests
             JObject pJOtCreds = JObject.Parse(pStrCreds);
             cStrTableStorageRootURL = pJOtCreds["TableStorageRootURL"].Value<String>();
             cStrConnectionString = pJOtCreds["ConnectionString"].Value<String>();
+            EnvironmentHelpers.SetEnvironmentVariable("HOME", @"C:\Temp", EnvironmentVariableTarget.Process);
+            EnvironmentHelpers.SetEnvironmentVariable("TableStorageRootURL", cStrTableStorageRootURL, EnvironmentVariableTarget.Process);
             EnvironmentHelpers.SetEnvironmentVariable("AzureWebJobsStorage", cStrConnectionString, EnvironmentVariableTarget.Process);
 
             //Init storage
-            cStoStorage = new Storage(cStrTableStorageRootURL,
+            cStoStorage = new Storage("TableStorageRootURL",
                "AzureWebJobsStorage",
                "Test");
         }
@@ -51,15 +53,12 @@ namespace devoctomy.funk.core.tests
         [TestMethod()]
         public void RegisterAndGet10Hits()
         {
-            Storage pStoStorage = new Storage(cStrTableStorageRootURL,
-                "AzureWebJobsStorage",
-                "Test");
             for(Int32 curHit = 1; curHit <= 10; curHit++)
             {
-                pStoStorage.RegisterHit("TestFunction", 
+                cStoStorage.RegisterHit("TestFunction", 
                     "127.0.0.1");
             }
-            List<FunctionHit> pLisHits = pStoStorage.GetHits("TestFunction",
+            List<FunctionHit> pLisHits = cStoStorage.GetHits("TestFunction",
                 "127.0.0.1",
                 DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0)));
             Assert.IsTrue(pLisHits.Count > 10);

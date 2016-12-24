@@ -6,6 +6,8 @@ using Microsoft.WindowsAzure.Storage.Table;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.WindowsAzure.Storage.Queue;
+using System.Security.Claims;
+using devoctomy.funk.core.Extensions;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -215,22 +217,17 @@ namespace devoctomy.funk.core.Membership
             }
             catch
             {
-#if (DEBUG)
-                throw;
-#else
                 return (false);
-#endif
             }
         }
 
         /// <summary>
-        /// Get a user from storage by its email address asynchronously
+        /// Get a user from storage by its given user principal
         /// </summary>
-        /// <param name="iEmail">Email address of the user to get</param>
-        /// <returns>The required user, if found in storage, otherwise null</returns>
-        public async Task<User> GetUserAsync(String iEmail)
+        /// <param name="iUserPrincipal">User principal of the user to get</param>
+        /// <returns>The requested user, if found in storage, otherwise null</returns>
+        public async Task<User> GetUserAsync(ClaimsPrincipal iUserPrincipal)
         {
-            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
             Boolean pBlnCreatedTable = await UsersTable.CreateIfNotExistsAsync();
             TableResult pTRtResult = new TableResult() { HttpStatusCode = 404 };
             if (pBlnCreatedTable)
@@ -239,7 +236,9 @@ namespace devoctomy.funk.core.Membership
             }
             else
             {
-                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
+                String pStrPartitionKey = iUserPrincipal.GetUserPartitionKey(ClaimsPrincipalExtensions.KeySource.email);
+                String pStrRowKey = iUserPrincipal.GetUserRowKey(ClaimsPrincipalExtensions.KeySource.email);
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, pStrRowKey);
                 pTRtResult = UsersTable.Execute(pTOnRetrieve);
                 switch(pTRtResult.HttpStatusCode)
                 {
@@ -253,13 +252,12 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
-        /// Get a user from storage by its email address
+        /// Get a user from storage by its given user principal
         /// </summary>
-        /// <param name="iEmail">Email address of the user to get</param>
-        /// <returns>The required user, if found in storage, otherwise null</returns>
-        public User GetUser(String iEmail)
+        /// <param name="iUserPrincipal">User principal of the user to get</param>
+        /// <returns>The requested user, if found in storage, otherwise null</returns>
+        public User GetUser(ClaimsPrincipal iUserPrincipal)
         {
-            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iEmail);
             Boolean pBlnCreatedTable = UsersTable.CreateIfNotExists();
             TableResult pTRtResult = new TableResult() { HttpStatusCode = 404 };
             if (pBlnCreatedTable)
@@ -268,7 +266,9 @@ namespace devoctomy.funk.core.Membership
             }
             else
             {
-                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, iEmail);
+                String pStrPartitionKey = iUserPrincipal.GetUserPartitionKey(ClaimsPrincipalExtensions.KeySource.email);
+                String pStrRowKey = iUserPrincipal.GetUserRowKey(ClaimsPrincipalExtensions.KeySource.email);
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<User>(pStrPartitionKey, pStrRowKey);
                 pTRtResult = UsersTable.Execute(pTOnRetrieve);
                 switch (pTRtResult.HttpStatusCode)
                 {
@@ -343,11 +343,7 @@ namespace devoctomy.funk.core.Membership
                 }
                 catch
                 {
-#if (DEBUG)
-                    throw;
-#else
                     return (false);
-#endif
                 }
             }
         }
@@ -381,11 +377,7 @@ namespace devoctomy.funk.core.Membership
             }
             catch
             {
-#if (DEBUG)
-                throw;
-#else
                 return (false);
-#endif
             }
         }
 
@@ -465,11 +457,7 @@ namespace devoctomy.funk.core.Membership
             }
             catch
             {
-#if (DEBUG)
-                throw;
-#else
                 return (false);
-#endif
             }
         }
 
@@ -506,11 +494,7 @@ namespace devoctomy.funk.core.Membership
             }
             catch
             {
-#if (DEBUG)
-                throw;
-#else
                 return (false);
-#endif
             }
         }
 
