@@ -164,6 +164,26 @@ namespace devoctomy.funk.core.Membership
 
         #region public methods
 
+
+        /// <summary>
+        /// Checks to see if a username is available
+        /// </summary>
+        /// <param name="iUserName">The username to check for</param>
+        /// <returns>True of the username is available</returns>
+        public Boolean IsUserNameAvailable(String iUserName)
+        {
+            String pStrFilter = TableQuery.GenerateFilterCondition(
+                "UserName",
+                QueryComparisons.Equal,
+                iUserName);
+
+            TableQuery<User> pTQyQuery = new TableQuery<User>().Where(pStrFilter);
+            IEnumerable<User> pIEeMatches = UsersTable.ExecuteQuery<User>(pTQyQuery);
+            List<User> pLisMatches = new List<User>(pIEeMatches);
+
+            return (pLisMatches.Count == 0);
+        }
+
         /// <summary>
         /// Get all hits for a specific function, from a specific source
         /// </summary>
@@ -523,6 +543,16 @@ namespace devoctomy.funk.core.Membership
 
         public FriendsList GetUserFriendsList(User iUser)
         {
+            Boolean pBlnCreatedTable = cCTeFriendsLists.CreateIfNotExists();
+            if(pBlnCreatedTable)
+            {
+                //return a new friends list for this user here
+            }
+            else
+            {
+                String pStrPartitionKey = iUser.Email;
+            }
+
             //cCTeFriendsLists
             throw new NotImplementedException();
         }

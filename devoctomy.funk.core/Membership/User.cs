@@ -17,6 +17,16 @@ namespace devoctomy.funk.core.Membership
         #region public properties
 
         /// <summary>
+        /// The email address of this user, this is private
+        /// </summary>
+        public String Email { get; set; }
+
+        /// <summary>
+        /// The username of this user, this is public
+        /// </summary>
+        public String UserName { get; set; }
+
+        /// <summary>
         /// Date / Time this user was created
         /// </summary>
         public DateTime CreatedAt { get; set; }
@@ -55,6 +65,8 @@ namespace devoctomy.funk.core.Membership
             Int32 iActivationCodeLength)
         {
             CreatedAt = DateTime.UtcNow;
+            Email = iUserPrincipal.GetUserRowKey(ClaimsPrincipalExtensions.KeySource.email);
+            UserName = String.Empty;
             RowKey = iUserPrincipal.GetUserRowKey(ClaimsPrincipalExtensions.KeySource.email);
             PartitionKey = iUserPrincipal.GetUserPartitionKey(ClaimsPrincipalExtensions.KeySource.email);
             RandomiseActivationCode(iActivationCodeLength);
@@ -69,37 +81,31 @@ namespace devoctomy.funk.core.Membership
         /// Attempt to activate the user, the activation code must match the one in storage
         /// </summary>
         /// <param name="iStorage">The storage instance to use</param>
-        /// <param name="iActivationCde">The activation code provided during the activation process by the user</param>
-        /// <returns>True if the activation code matched and storage was updated</returns>
-        public async Task<Boolean> ActivateAsync(Storage iStorage, 
-            String iActivationCde)
-        {
-            if(!Locked && !Activated && ActivationCode == iActivationCde)
-            {
-                Activated = true;
-                ActivationCode = String.Empty;
-                return (await iStorage.ReplaceAsync(this));
-            }
-            else
-            {
-                return (false);
-            }
-        }
-
-        /// <summary>
-        /// Attempt to activate the user, the activation code must match the one in storage
-        /// </summary>
-        /// <param name="iStorage">The storage instance to use</param>
-        /// <param name="iActivationCde">The activation code provided during the activation process by the user</param>
-        /// <returns>True if the activation code matched and storage was updated</returns>
+        /// <param name="iActivationCode">The activation code provided during the activation process by the user</param>
+        /// <param name="iUserName">The username to request for the user</param>
+        /// <param name="oUserNameTaken">Returns as true if the username was already taken</param>
+        /// <returns>True if the activation code matched and storage was updated.  If the username was already taken, the function will return false and oUserNameTaken will return true.</returns>
         public Boolean Activate(Storage iStorage,
-            String iActivationCde)
+            String iActivationCode,
+            String iUserName,
+            out Boolean oUserNameTaken)
         {
-            if (!Locked && !Activated && ActivationCode == iActivationCde)
+            oUserNameTaken = false;
+            if (!Locked && !Activated && ActivationCode == iActivationCode)
             {
                 Activated = true;
                 ActivationCode = String.Empty;
-                return (iStorage.Replace(this));
+
+                if(iStorage.IsUserNameAvailable(iUserName))
+                {
+                    UserName = iUserName;
+                    return (iStorage.Replace(this));
+                }
+                else
+                {
+                    oUserNameTaken = true;
+                    return (false);
+                }
             }
             else
             {

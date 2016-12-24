@@ -72,7 +72,7 @@ namespace devoctomy.funk.core.tests
         {
             await CreateUser(false);
             await CreateUser(true);
-            await ActivateUser();
+            await ActivateUserWithAvailableUserName();
             //DeleteUser?
         }
 
@@ -95,7 +95,7 @@ namespace devoctomy.funk.core.tests
         }
 
         //[TestMethod]
-        public async Task ActivateUser()
+        public async Task ActivateUserWithAvailableUserName()
         {
             Storage pStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
@@ -103,7 +103,11 @@ namespace devoctomy.funk.core.tests
             User pUsrUser = await pStoStorage.GetUserAsync(GetTestUserPrincipal());
             if (pUsrUser != null)
             {
-                Assert.IsTrue(await pUsrUser.ActivateAsync(pStoStorage, cStrActivationCode));
+                Boolean pBlnUserNameTaken = false;
+                Assert.IsTrue(pUsrUser.Activate(pStoStorage, 
+                    cStrActivationCode, 
+                    cStrUserName, 
+                    out pBlnUserNameTaken));
             }
             else
             {

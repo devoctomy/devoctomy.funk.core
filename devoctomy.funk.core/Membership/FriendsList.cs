@@ -12,7 +12,16 @@ namespace devoctomy.funk.core.Membership
 
         #region private objects
 
-        private List<String> cLisFriends = null;
+        private List<Friend> cLisFriends = null;
+
+        #endregion
+
+        #region public properties
+
+        public IReadOnlyList<Friend> Friends
+        {
+            get { return (cLisFriends); }
+        }
 
         #endregion
 
