@@ -27,6 +27,7 @@ namespace devoctomy.funk.core.Membership
         CloudTable cCTeUsers;
         CloudTable cCTeProfiles;
         CloudTable cCTeFunctionHits;
+        CloudTable cCTeFriendsLists;
 
         #endregion
 
@@ -35,7 +36,7 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// Table storage root url of the Azure storage account
         /// </summary>
-        public String TaleStorageRootURL
+        public String TableStorageRootURL
         {
             get { return (cStrTableStorageRootURL); }
         }
@@ -69,7 +70,7 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri UsersTableURI
         {
-            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "users"))); }
+            get { return (new Uri(String.Format("{0}/{1}", TableStorageRootURL, "users"))); }
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri ProfilesTableURI
         {
-            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "profiles"))); }
+            get { return (new Uri(String.Format("{0}/{1}", TableStorageRootURL, "profiles"))); }
         }
 
         /// <summary>
@@ -85,7 +86,15 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         public Uri FunctionHitsTableURI
         {
-            get { return (new Uri(String.Format("{0}/{1}", TaleStorageRootURL, "functionhits"))); }
+            get { return (new Uri(String.Format("{0}/{1}", TableStorageRootURL, "functionhits"))); }
+        }
+
+        /// <summary>
+        /// URI for the friends lists Azure table storage endpoint
+        /// </summary>
+        public Uri FriendsListsTableURI
+        {
+            get { return (new Uri(String.Format("{0}/{1}", TableStorageRootURL, "friendslists"))); }
         }
 
         /// <summary>
@@ -148,6 +157,7 @@ namespace devoctomy.funk.core.Membership
             cCTeUsers = new CloudTable(UsersTableURI, cCSAAccount.Credentials);
             cCTeProfiles = new CloudTable(ProfilesTableURI, cCSAAccount.Credentials);
             cCTeFunctionHits = new CloudTable(FunctionHitsTableURI, cCSAAccount.Credentials);
+            cCTeFriendsLists = new CloudTable(FriendsListsTableURI, cCSAAccount.Credentials);
         }
 
         #endregion
@@ -388,7 +398,6 @@ namespace devoctomy.funk.core.Membership
         /// <returns>The users profile if found, otherwise null</returns>
         public Profile GetUserProfile(User iUser)
         {
-            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
             if(pBlnCreatedTable)
             {
@@ -398,7 +407,7 @@ namespace devoctomy.funk.core.Membership
             }
             else
             {
-                TableOperation pTOnRetrieve = TableOperation.Retrieve<DynamicTableEntity>(pStrPartitionKey, iUser.RowKey);
+                TableOperation pTOnRetrieve = TableOperation.Retrieve<DynamicTableEntity>(iUser.PartitionKey, iUser.RowKey);
                 TableResult pTRtResult = ProfilesTable.Execute(pTOnRetrieve);
                 switch (pTRtResult.HttpStatusCode)
                 {
@@ -434,9 +443,8 @@ namespace devoctomy.funk.core.Membership
         public Boolean InsertProfile(User iUser,
             Profile iProfile)
         {
-            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
-            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey);
+            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(iUser.PartitionKey, iUser.RowKey);
             TableOperation pTOnInsert = TableOperation.Insert(pDTEProfile);
             TableResult pTRtResult;
             try
@@ -470,9 +478,8 @@ namespace devoctomy.funk.core.Membership
         public Boolean ReplaceProfile(User iUser,
             Profile iProfile)
         {
-            String pStrPartitionKey = AzureTableHelpers.GetPartitionKeyFromEmailString(iUser.RowKey);
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
-            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(pStrPartitionKey, iUser.RowKey);
+            DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(iUser.PartitionKey, iUser.RowKey);
             pDTEProfile.ETag = "*";
             TableOperation pTOnReplace = TableOperation.Replace(pDTEProfile);
             TableResult pTRtResult;
@@ -511,6 +518,13 @@ namespace devoctomy.funk.core.Membership
             pCQeQueue.CreateIfNotExists();
             CloudQueueMessage pCQMMessage = new CloudQueueMessage(iMessage);
             pCQeQueue.AddMessage(pCQMMessage);
+        }
+
+
+        public FriendsList GetUserFriendsList(User iUser)
+        {
+            //cCTeFriendsLists
+            throw new NotImplementedException();
         }
 
         #endregion

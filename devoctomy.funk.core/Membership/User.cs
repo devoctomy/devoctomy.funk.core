@@ -151,12 +151,22 @@ namespace devoctomy.funk.core.Membership
         /// </summary>
         /// <param name="iStorage">The storage instance to use</param>
         /// <param name="iProfile">The profile to associate with the user</param>
-        /// <returns></returns>
+        /// <returns>True on success</returns>
         public Boolean ReplaceProfile(Storage iStorage,
             Profile iProfile)
         {
             return(iProfile.Replace(iStorage,
                 this));
+        }
+
+        /// <summary>
+        /// Get this users friends list from storage
+        /// </summary>
+        /// <param name="iStorage">The storage instance to use</param>
+        /// <returns>All friends of this user instance</returns>
+        public FriendsList GetFriends(Storage iStorage)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
