@@ -13,7 +13,7 @@ using System.Security.Principal;
 namespace devoctomy.funk.core.tests
 {
     [TestClass]
-    public class Profile
+    public class ProfileTests
     {
 
         #region private objects

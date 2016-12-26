@@ -7,7 +7,7 @@ namespace devoctomy.funk.core.tests
 {
 
     [TestClass]
-    public class RSA
+    public class CryptographyTests
     {
 
         #region private objects

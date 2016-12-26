@@ -81,10 +81,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Hits.cs" />
-    <Compile Include="Profile.cs" />
-    <Compile Include="RSA.cs" />
-    <Compile Include="UserManagement.cs" />
+    <Compile Include="FriendTests.cs" />
+    <Compile Include="FunctionHitTests.cs" />
+    <Compile Include="ProfileTests.cs" />
+    <Compile Include="CryptographyTests.cs" />
+    <Compile Include="UserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

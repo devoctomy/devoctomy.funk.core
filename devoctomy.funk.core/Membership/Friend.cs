@@ -1,6 +1,7 @@
 ﻿using devoctomy.funk.core.Cryptography;
 using devoctomy.funk.core.Extensions;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,6 +41,12 @@ namespace devoctomy.funk.core.Membership
 
         #region public methods
 
+        public JObject ToJObject()
+        {
+            JObject pJOtObject = new JObject();
+            pJOtObject.Add("UserName", new JValue(UserName));
+            return (pJOtObject);
+        }
 
         #endregion
 

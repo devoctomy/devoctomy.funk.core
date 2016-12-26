@@ -122,6 +122,14 @@ namespace devoctomy.funk.core.Membership
         }
 
         /// <summary>
+        /// Friends list table
+        /// </summary>
+        public CloudTable FriendsListTable
+        {
+            get { return (cCTeFriendsLists); }
+        }
+
+        /// <summary>
         /// The assets path
         /// </summary>
         public String FunctionAssetsPath
@@ -166,7 +174,7 @@ namespace devoctomy.funk.core.Membership
 
 
         /// <summary>
-        /// Checks to see if a username is available
+        /// Checks to see if a username is available, the same as FindUser only the return value is discarded
         /// </summary>
         /// <param name="iUserName">The username to check for</param>
         /// <returns>True of the username is available</returns>
@@ -182,6 +190,32 @@ namespace devoctomy.funk.core.Membership
             List<User> pLisMatches = new List<User>(pIEeMatches);
 
             return (pLisMatches.Count == 0);
+        }
+
+        /// <summary>
+        /// Find a user by its unique username
+        /// </summary>
+        /// <param name="iUserName">The username of the user to search for</param>
+        /// <returns>If found, an instance of the user that matches the provided username</returns>
+        public User FindUser(String iUserName)
+        {
+            String pStrFilter = TableQuery.GenerateFilterCondition(
+                "UserName",
+                QueryComparisons.Equal,
+                iUserName);
+
+            TableQuery<User> pTQyQuery = new TableQuery<User>().Where(pStrFilter);
+            IEnumerable<User> pIEeMatches = UsersTable.ExecuteQuery<User>(pTQyQuery);
+            List<User> pLisMatches = new List<User>(pIEeMatches);
+
+            if (pLisMatches.Count > 0)
+            {
+                return (pLisMatches[0]);
+            }
+            else
+            {
+                return (null);
+            }
         }
 
         /// <summary>
@@ -541,20 +575,100 @@ namespace devoctomy.funk.core.Membership
         }
 
 
+        /// <summary>
+        /// Get the friends list of a specific user
+        /// </summary>
+        /// <param name="iUser">The user to get the friends list for</param>
+        /// <returns>The friends list of the provided user</returns>
         public FriendsList GetUserFriendsList(User iUser)
         {
             Boolean pBlnCreatedTable = cCTeFriendsLists.CreateIfNotExists();
             if(pBlnCreatedTable)
             {
-                //return a new friends list for this user here
+                FriendsList pFLtFriends = new FriendsList(iUser, new List<Friend>());
+                return (pFLtFriends);
             }
             else
             {
-                String pStrPartitionKey = iUser.Email;
-            }
+                String pStrPartitionKey = iUser.RowKey;
+                String pStrFilter = TableQuery.GenerateFilterCondition(
+                    "PartitionKey",
+                    QueryComparisons.Equal,
+                    pStrPartitionKey);
 
-            //cCTeFriendsLists
-            throw new NotImplementedException();
+                TableQuery<Friend> pTQyQuery = new TableQuery<Friend>().Where(pStrFilter);
+                IEnumerable<Friend> pIEeMatches = FriendsListTable.ExecuteQuery<Friend>(pTQyQuery);
+                List<Friend> pLisMatches = new List<Friend>(pIEeMatches);
+
+                FriendsList pFLtFriends = new FriendsList(iUser, pLisMatches);
+                return (pFLtFriends);
+            }
+        }
+
+        /// <summary>
+        /// Insert a friend into a users friends list
+        /// </summary>
+        /// <param name="iFriend">The friend to insert to the friends list, created by FriendsList.AddFriend</param>
+        /// <returns>True if the friend was inserted successfully</returns>
+        public Boolean InsertFriendIntoFriendsList(Friend iFriend)
+        {
+            Boolean pBlnCreatedTable = cCTeFriendsLists.CreateIfNotExists();
+            TableOperation pTOnInsert = TableOperation.Insert(iFriend);
+            TableResult pTRtResult;
+            try
+            {
+                pTRtResult = FriendsListTable.Execute(pTOnInsert);
+                switch (pTRtResult.HttpStatusCode)
+                {
+                    case 200:
+                    case 204:
+                        {
+                            return (true);
+                        }
+                    default:
+                        {
+                            return (false);
+                        }
+                }
+            }
+            catch
+            {
+                return (false);
+            }
+        }
+
+        public Boolean DeleteFriendFromUsersFriendList(Friend iFriend)
+        {
+            Boolean pBlnCreatedTable = cCTeFriendsLists.CreateIfNotExists();
+            if(pBlnCreatedTable)
+            {
+                return (false);
+            }
+            else
+            {
+                TableOperation pTOnDelete = TableOperation.Delete(iFriend);
+                TableResult pTRtResult;
+                try
+                {
+                    pTRtResult = FriendsListTable.Execute(pTOnDelete);
+                    switch (pTRtResult.HttpStatusCode)
+                    {
+                        case 200:
+                        case 204:
+                            {
+                                return (true);
+                            }
+                        default:
+                            {
+                                return (false);
+                            }
+                    }
+                }
+                catch
+                {
+                    return (false);
+                }
+            }
         }
 
         #endregion

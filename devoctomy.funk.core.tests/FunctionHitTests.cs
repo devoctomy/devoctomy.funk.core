@@ -11,7 +11,7 @@ namespace devoctomy.funk.core.tests
 {
 
     [TestClass]
-    public class Hits
+    public class FunctionHitTests
     {
 
         #region private objects

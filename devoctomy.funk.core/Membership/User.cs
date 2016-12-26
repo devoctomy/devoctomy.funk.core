@@ -172,7 +172,7 @@ namespace devoctomy.funk.core.Membership
         /// <returns>All friends of this user instance</returns>
         public FriendsList GetFriends(Storage iStorage)
         {
-            throw new NotImplementedException();
+            return (iStorage.GetUserFriendsList(this));
         }
 
         #endregion

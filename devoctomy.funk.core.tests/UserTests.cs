@@ -12,7 +12,7 @@ using System.Security.Principal;
 namespace devoctomy.funk.core.tests
 {
     [TestClass]
-    public class UserManagement
+    public class UserTests
     {
 
         #region private objects
@@ -22,7 +22,6 @@ namespace devoctomy.funk.core.tests
         private String cStrTableStorageRootURL = String.Empty;
         private String cStrConnectionString = String.Empty;
         private String cStrActivationCode = String.Empty;
-        private String cStrOTP = String.Empty;
 
         #endregion
 
@@ -42,7 +41,6 @@ namespace devoctomy.funk.core.tests
                 CryptographyHelpers.RandomString(12));
             cStrUserName = CryptographyHelpers.RandomString(12);
             cStrActivationCode = CryptographyHelpers.RandomString(6);
-            cStrOTP = CryptographyHelpers.RandomString(6);
         }
 
         #endregion
