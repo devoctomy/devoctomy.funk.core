@@ -42,10 +42,17 @@ namespace devoctomy.funk.core.Azure.Functions
 
         #region public methods
 
-        public String ToJSON(HttpStatusCode iStatusCode,
+        public void Finish()
+        {
+            cDTeFinished = DateTime.UtcNow;
+        }
+
+        public String ToJSON(Boolean iFinish,
+            HttpStatusCode iStatusCode,
             IJSONSerialisable iReturnValue,
             Newtonsoft.Json.Formatting iFormatting)
         {
+            if (iFinish) Finish();
             JObject pJOtJSON = new JObject();
             JObject pJOtStatistics = new JObject();
             pJOtStatistics.Add("StartedAt", new JValue(StartedAt.ToString(EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"))));
@@ -55,6 +62,7 @@ namespace devoctomy.funk.core.Azure.Functions
             JObject pJOtResponse = new JObject();
             pJOtResponse.Add("StatusCode", new JValue((Int32)iStatusCode));
             pJOtResponse.Add("ReturnValue", iReturnValue.ToJObject());
+            pJOtJSON.Add("Response", pJOtResponse);
             return (pJOtJSON.ToString(iFormatting));
         }
 

@@ -80,6 +80,7 @@ namespace devoctomy.funk.core.tests
             Storage pStoStorage = new Storage("TableStorageRootURL",
                 "AzureWebJobsStorage",
                 "Test");
+
             User pUsrUser = new User(GetTestUserPrincipal(), 6);
             pUsrUser.ActivationCode = cStrActivationCode;
             if(iFail)
