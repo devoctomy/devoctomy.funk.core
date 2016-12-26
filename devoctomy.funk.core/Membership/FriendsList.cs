@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using devoctomy.funk.core.JSON;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace devoctomy.funk.core.Membership
     /// <summary>
     /// 
     /// </summary>
-    public class FriendsList
+    public class FriendsList : IJSONSerialisable
     {
 
         #region private objects
@@ -128,18 +129,17 @@ namespace devoctomy.funk.core.Membership
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="iFormatting"></param>
         /// <returns></returns>
-        public String ToJSON(Newtonsoft.Json.Formatting iFormatting)
+        public JObject ToJObject()
         {
             JObject pJOtObject = new JObject();
             JArray pJAyFriends = new JArray();
-            foreach(Friend curFriend in Friends)
+            foreach (Friend curFriend in Friends)
             {
                 pJAyFriends.Add(curFriend.ToJObject());
             }
             pJOtObject.Add("Friends", pJAyFriends);
-            return (pJOtObject.ToString(iFormatting));
+            return (pJOtObject);
         }
 
         #endregion

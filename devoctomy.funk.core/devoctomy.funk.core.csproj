@@ -71,11 +71,13 @@
     <Compile Include="Azure\Functions\FunctionLimiter.cs" />
     <Compile Include="Azure\Functions\FunctionLimiterFunction.cs" />
     <Compile Include="Azure\Functions\FunctionLimiterLimit.cs" />
+    <Compile Include="Azure\Functions\FunctionResponseBase.cs" />
     <Compile Include="Azure\Table\AzureTableHelpers.cs" />
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="JSON\IJSONSerialisable.cs" />
     <Compile Include="Membership\FriendsList.cs" />
     <Compile Include="Membership\FunctionHit.cs" />
     <Compile Include="Membership\Profile.cs" />
@@ -95,6 +97,7 @@
     </Content>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

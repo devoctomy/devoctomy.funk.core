@@ -107,6 +107,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\devoctomy.funk.core\JSON\IJSONSerialisable.cs">
+      <Link>JSON\IJSONSerialisable.cs</Link>
+    </Compile>
     <Compile Include="..\devoctomy.funk.core\Membership\Profile.cs">
       <Link>Membership\Profile.cs</Link>
     </Compile>

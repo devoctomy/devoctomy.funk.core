@@ -1,13 +1,11 @@
 ﻿#if !WINDOWS_UWP
-    using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.WindowsAzure.Storage.Table;
 #endif
 
+using devoctomy.funk.core.JSON;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace devoctomy.funk.core.Membership
 {
@@ -15,7 +13,7 @@ namespace devoctomy.funk.core.Membership
     /// <summary>
     /// User profile, for containing per/user system settings
     /// </summary>
-    public class Profile
+    public class Profile : IJSONSerialisable
     {
 
         #region private objects
@@ -231,15 +229,14 @@ namespace devoctomy.funk.core.Membership
 #endif
 
         /// <summary>
-        /// Serialise this profile instance as a JSON string
+        /// 
         /// </summary>
-        /// <param name="iFormatting">JSON formatting to use when serialising</param>
-        /// <returns>A JSON string representation of this profile instance</returns>
-        public String ToJSON(Newtonsoft.Json.Formatting iFormatting)
+        /// <returns></returns>
+        public JObject ToJObject()
         {
             JObject pJOtJSON = new JObject();
             JArray pJAyCategories = new JArray();
-            foreach(String curCategory in cDicParams.Keys)
+            foreach (String curCategory in cDicParams.Keys)
             {
                 JObject pJOtCategory = new JObject();
                 pJOtCategory.Add("Name", new JValue(curCategory));
@@ -249,7 +246,7 @@ namespace devoctomy.funk.core.Membership
                     JObject pJOtSubCategory = new JObject();
                     pJOtSubCategory.Add("Name", new JValue(curSubCategory));
                     JArray pJAyFields = new JArray();
-                    foreach(String curField in cDicParams[curCategory][curSubCategory].Keys)
+                    foreach (String curField in cDicParams[curCategory][curSubCategory].Keys)
                     {
                         JObject pJOtField = new JObject();
                         pJOtField.Add("Name", new JValue(curField));
@@ -263,7 +260,7 @@ namespace devoctomy.funk.core.Membership
                 pJAyCategories.Add(pJOtCategory);
             }
             pJOtJSON.Add("Categories", pJAyCategories);
-            return (pJOtJSON.ToString(iFormatting));
+            return (pJOtJSON);
         }
 
 #if !WINDOWS_UWP
@@ -299,7 +296,7 @@ namespace devoctomy.funk.core.Membership
             }
         }
 
-#endregion
+        #endregion
 
     }
 

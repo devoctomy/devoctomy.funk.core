@@ -34,7 +34,7 @@ namespace devoctomy.funk.client
         {
             HttpResponseMessage pHRMResponse = await iFuncClient.AuthenticatedRequestAsync("PUT",
                 iFuncClient.GetFunctionURI("Profile"),
-                iProfile.ToJSON(Newtonsoft.Json.Formatting.None));
+                iProfile.ToJObject().ToString(Newtonsoft.Json.Formatting.None));
             if (pHRMResponse.IsSuccessStatusCode)
             {
                 String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();

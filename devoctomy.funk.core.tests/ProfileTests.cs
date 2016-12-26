@@ -72,7 +72,7 @@ namespace devoctomy.funk.core.tests
         public void ProfileFromJSONToJSONAndBackAgain()
         {
             Membership.Profile pProProfile = Membership.Profile.FromJSON(cStrDefaultProfile);
-            String pStrProfile = pProProfile.ToJSON(Newtonsoft.Json.Formatting.Indented);
+            String pStrProfile = pProProfile.ToJObject().ToString(Newtonsoft.Json.Formatting.Indented);
             pProProfile = Membership.Profile.FromJSON(pStrProfile);
         }
 
