@@ -93,6 +93,11 @@ namespace devoctomy.funk.core.tests
             }
         }
 
+        public async Task FindUser(String iUserName)
+        {
+            throw new NotImplementedException();
+        }
+
         //[TestMethod]
         public async Task ActivateUserWithAvailableUserName()
         {
