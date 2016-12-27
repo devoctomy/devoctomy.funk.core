@@ -1,0 +1,8 @@
+﻿<Application
+    x:Class="devoctomy.funk.client.test.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:devoctomy.funk.client.test"
+    RequestedTheme="Light">
+
+</Application>

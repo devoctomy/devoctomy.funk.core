@@ -40,7 +40,7 @@ namespace devoctomy.funk.client
             }
         }
 
-        public Uri ApplicationCallbackURI
+        public static Uri ApplicationCallbackURI
         {
             get { return (WebAuthenticationBroker.GetCurrentApplicationCallbackUri()); }
         }
