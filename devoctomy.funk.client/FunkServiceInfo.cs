@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using devoctomy.funk.core.JSON;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.client
 {
 
-    public class FunkServiceInfo
+    public class FunkServiceInfo : IJSONSerialisable
     {
 
         #region private objects
@@ -63,11 +64,22 @@ namespace devoctomy.funk.client
                 JObject pJOtJSON = JObject.Load(pJRrReader);
                 pFIoInfo.cStrName = pJOtJSON["Name"].Value<String>();
                 pFIoInfo.cStrVersion = pJOtJSON["Version"].Value<String>();
-                //pFIoInfo.cDTeInfoRequestedAt = DateTime.ParseExact(pJOtJSON["InfoRequestedAt"].Value<String>(), "", System.Globalization.CultureInfo.InvariantCulture);
+                //pFIoInfo.cDTeInfoRequestedAt = DateTime.ParseExact(pJOtJSON["InfoRequestedAt"].Value<String>(), EnvironmentHelpers.GetEnvironmentVariable("DateTimeFormat"), System.Globalization.CultureInfo.InvariantCulture);
                 pFIoInfo.cStrPublicKey = pJOtJSON["PublicKey"].Value<String>();
                 pFIoInfo.cStrFacebookCallbackURL = pJOtJSON["FacebookCallbackURL"].Value<String>();
             }
             return (pFIoInfo);
+        }
+
+        public JObject ToJObject()
+        {
+            JObject pJOtJSON = new JObject();
+            pJOtJSON.Add("Name", new JValue(Name));
+            pJOtJSON.Add("Version", new JValue(Version));
+            pJOtJSON.Add("InfoRequestedAt", new JValue(InfoRequestedAt.ToString("")));
+            pJOtJSON.Add("PublicKey", new JValue(PublicKey));
+            pJOtJSON.Add("FacebookCallbackURL", new JValue(FacebookCallbackURL));
+            return (pJOtJSON);
         }
 
         #endregion

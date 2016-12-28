@@ -9,7 +9,9 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Button Height="32" Content="Authenticate" HorizontalAlignment="Stretch" Click="Button_Click" />
+            <Button x:Name="butAuthenticate" Height="32" Content="Authenticate" HorizontalAlignment="Stretch" Click="butAuthenticate_Click" />
+            <Button x:Name="butRegister" Height="32" Content="Register" HorizontalAlignment="Stretch" Click="butRegister_Click" />
+            <Button x:Name="butServiceInfo" Height="32" Content="Service Info" HorizontalAlignment="Stretch" Click="butServiceInfo_Click" />
         </StackPanel>
     </Grid>
 </Page>

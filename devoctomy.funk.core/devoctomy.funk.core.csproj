@@ -73,6 +73,7 @@
     <Compile Include="Azure\Functions\FunctionLimiterFunction.cs" />
     <Compile Include="Azure\Functions\FunctionLimiterLimit.cs" />
     <Compile Include="Azure\Functions\FunctionResponseBase.cs" />
+    <Compile Include="Azure\Functions\FunctionsHelpers.cs" />
     <Compile Include="Azure\Table\AzureTableHelpers.cs" />
     <Compile Include="Cryptography\CryptographyHelpers.cs" />
     <Compile Include="Cryptography\RSAParametersSerialisable.cs" />

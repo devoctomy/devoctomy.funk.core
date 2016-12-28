@@ -80,7 +80,7 @@ namespace devoctomy.funk.client
         {
             String pStrFacebookAuthURI = cStrAzureFunctionRootURL;
             if (!pStrFacebookAuthURI.EndsWith("/")) pStrFacebookAuthURI += "/";
-            pStrFacebookAuthURI += String.Format("/api/{0}", iFunctionName);
+            pStrFacebookAuthURI += String.Format("api/{0}", iFunctionName);
             return (pStrFacebookAuthURI);
         }
 
@@ -136,7 +136,7 @@ namespace devoctomy.funk.client
         {
             cHCtClient.DefaultRequestHeaders.Remove("x-zumo-auth");
             cHCtClient.DefaultRequestHeaders.Add("x-zumo-auth", cStrAuthToken);
-            switch(iMethod.ToUpper())
+            switch (iMethod.ToUpper())
             {
                 case "GET":
                     {

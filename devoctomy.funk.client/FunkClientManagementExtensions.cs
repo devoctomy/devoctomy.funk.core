@@ -14,10 +14,26 @@ namespace devoctomy.funk.client
 
         #region methods
 
-        public static async Task<FunkManagementGetProfileResponse> GetProfile(this FunkClient iFuncClient)
+        public static async Task<FunkManagementRegisterResponse> RegisterAsync(this FunkClient iFunkClient)
         {
-            HttpResponseMessage pHRMResponse = await iFuncClient.AuthenticatedRequestAsync("GET",
-                iFuncClient.GetFunctionURI("Profile"));
+            HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
+                iFunkClient.GetFunctionURI("Register"));
+            if (pHRMResponse.IsSuccessStatusCode)
+            {
+                String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
+                
+                return (new FunkManagementRegisterResponse(true, null));
+            }
+            else
+            {
+                return (new FunkManagementRegisterResponse(false, null));
+            }
+        }
+
+        public static async Task<FunkManagementGetProfileResponse> GetProfileAsync(this FunkClient iFunkClient)
+        {
+            HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
+                iFunkClient.GetFunctionURI("Profile"));
             if (pHRMResponse.IsSuccessStatusCode)
             {
                 String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
@@ -30,10 +46,10 @@ namespace devoctomy.funk.client
             }
         }
 
-        public static async Task<Boolean> SetProfile(this FunkClient iFuncClient, Profile iProfile)
+        public static async Task<Boolean> SetProfileAsync(this FunkClient iFunkClient, Profile iProfile)
         {
-            HttpResponseMessage pHRMResponse = await iFuncClient.AuthenticatedRequestAsync("PUT",
-                iFuncClient.GetFunctionURI("Profile"),
+            HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("PUT",
+                iFunkClient.GetFunctionURI("Profile"),
                 iProfile.ToJObject().ToString(Newtonsoft.Json.Formatting.None));
             if (pHRMResponse.IsSuccessStatusCode)
             {
@@ -47,10 +63,10 @@ namespace devoctomy.funk.client
             }
         }
 
-        public static async Task<FunkManagementServiceInfoResponse> ServiceInfo(this FunkClient iFuncClient)
+        public static async Task<FunkManagementServiceInfoResponse> ServiceInfoAsync(this FunkClient iFunkClient)
         {
-             HttpResponseMessage pHRMResponse = await iFuncClient.AuthenticatedRequestAsync("GET",
-                 iFuncClient.GetFunctionURI("ServiceInfo"));
+             HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
+                 iFunkClient.GetFunctionURI("ServiceInfo"));
             if(pHRMResponse.IsSuccessStatusCode)
             {
                 String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
