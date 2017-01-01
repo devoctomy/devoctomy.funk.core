@@ -39,13 +39,28 @@ namespace devoctomy.funk.client.test
         {
             if (await App.Client.AuthenticateAsync())
             {
+                butUserInfo.IsEnabled = true;
+                butRegister.IsEnabled = true;
+                butServiceInfo.IsEnabled = true;
+            }
+        }
+
+        private async void butUserInfo_Click(object sender, RoutedEventArgs e)
+        {
+            FunkManagementGetUserInfoResponse pSIRServiceInfoResponse = await App.Client.GetUserInfoAsync();
+            if (pSIRServiceInfoResponse.Success)
+            {
+
+            }
+            else
+            {
 
             }
         }
 
         private async void butRegister_Click(object sender, RoutedEventArgs e)
         {
-            FunkManagementRegisterResponse pRReRegisterResponse = await App.Client.RegisterAsync();
+            FunkManagementRegisterResponse pRReRegisterResponse = await App.Client.GetRegisterAsync();
             if (pRReRegisterResponse.Success)
             {
 
@@ -58,20 +73,7 @@ namespace devoctomy.funk.client.test
 
         private async void butServiceInfo_Click(object sender, RoutedEventArgs e)
         {
-            HttpResponseMessage resp = await App.Client.AuthenticatedRequestAsync("GET", App.Client.GetFunctionURI("Test"));
-            if (resp.IsSuccessStatusCode)
-            {
-                //success
-                String respMessage = await resp.Content.ReadAsStringAsync();
-                respMessage = "";
-            }
-            else
-            {
-                //fail
-            }
-
-
-            FunkManagementServiceInfoResponse pSIRServiceInfoResponse = await App.Client.ServiceInfoAsync();
+            FunkManagementServiceInfoResponse pSIRServiceInfoResponse = await App.Client.GetServiceInfoAsync();
             if (pSIRServiceInfoResponse.Success)
             {
 

@@ -118,8 +118,10 @@
     <Compile Include="FunkClient.cs" />
     <Compile Include="FunkClientManagementExtensions.cs" />
     <Compile Include="FunkManagementGetProfileResponse.cs" />
+    <Compile Include="FunkManagementGetUserInfoResponse.cs" />
     <Compile Include="FunkManagementRegisterResponse.cs" />
     <Compile Include="FunkManagementServiceInfoResponse.cs" />
+    <Compile Include="FunkUserInfo.cs" />
     <Compile Include="FunkServiceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\devoctomy.funk.client.rd.xml" />

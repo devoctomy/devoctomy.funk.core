@@ -14,7 +14,7 @@ namespace devoctomy.funk.client
 
         #region methods
 
-        public static async Task<FunkManagementRegisterResponse> RegisterAsync(this FunkClient iFunkClient)
+        public static async Task<FunkManagementRegisterResponse> GetRegisterAsync(this FunkClient iFunkClient)
         {
             HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
                 iFunkClient.GetFunctionURI("Register"));
@@ -63,7 +63,23 @@ namespace devoctomy.funk.client
             }
         }
 
-        public static async Task<FunkManagementServiceInfoResponse> ServiceInfoAsync(this FunkClient iFunkClient)
+        public static async Task<FunkManagementGetUserInfoResponse> GetUserInfoAsync(this FunkClient iFunkClient)
+        {
+            HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
+                iFunkClient.GetFunctionURI("UserInfo"));
+            if (pHRMResponse.IsSuccessStatusCode)
+            {
+                String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
+                FunkUserInfo pFIOResponse = FunkUserInfo.FromJSON(pStrResponse);
+                return (new FunkManagementGetUserInfoResponse(true, pFIOResponse));
+            }
+            else
+            {
+                return (new FunkManagementGetUserInfoResponse(false, null));
+            }
+        }
+
+        public static async Task<FunkManagementServiceInfoResponse> GetServiceInfoAsync(this FunkClient iFunkClient)
         {
              HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
                  iFunkClient.GetFunctionURI("ServiceInfo"));
