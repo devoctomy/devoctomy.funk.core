@@ -499,7 +499,7 @@ namespace devoctomy.funk.core.Membership
         {
             Boolean pBlnCreatedTable = ProfilesTable.CreateIfNotExists();
             DynamicTableEntity pDTEProfile = iProfile.ToDynamicTableEntity(iUser.PartitionKey, iUser.RowKey);
-            TableOperation pTOnInsert = TableOperation.Insert(pDTEProfile);
+            TableOperation pTOnInsert = TableOperation.InsertOrReplace(pDTEProfile);
             TableResult pTRtResult;
             try
             {

@@ -12,6 +12,13 @@
             <Button x:Name="butAuthenticate" Height="32" Content="Authenticate" HorizontalAlignment="Stretch" Click="butAuthenticate_Click" />
             <Button x:Name="butUserInfo" Height="32" Content="User Info" HorizontalAlignment="Stretch" Click="butUserInfo_Click" IsEnabled="false" />
             <Button x:Name="butRegister" Height="32" Content="Register" HorizontalAlignment="Stretch" Click="butRegister_Click" IsEnabled="false" />
+            <StackPanel x:Name="splAccountActivation" HorizontalAlignment="Stretch" Height="Auto" Orientation="Vertical">
+                <TextBlock>Activation Code</TextBlock>
+                <TextBox x:Name="tbxActivationCode"></TextBox>
+                <TextBlock>UserName</TextBlock>
+                <TextBox x:Name="tbxUserName"></TextBox>
+                <Button x:Name="butActivate" Content="Activate" Click="butActivate_Click"></Button>
+            </StackPanel>
             <Button x:Name="butServiceInfo" Height="32" Content="Service Info" HorizontalAlignment="Stretch" Click="butServiceInfo_Click" IsEnabled="false" />
         </StackPanel>
     </Grid>

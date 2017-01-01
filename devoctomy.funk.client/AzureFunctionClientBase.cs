@@ -76,12 +76,24 @@ namespace devoctomy.funk.client
 
         #region public methods
 
-        public String GetFunctionURI(String iFunctionName)
+        public String GetFunctionURI(String iFunctionName,
+            params KeyValuePair<String,String>[] iQueryParams)
         {
-            String pStrFacebookAuthURI = cStrAzureFunctionRootURL;
-            if (!pStrFacebookAuthURI.EndsWith("/")) pStrFacebookAuthURI += "/";
-            pStrFacebookAuthURI += String.Format("api/{0}", iFunctionName);
-            return (pStrFacebookAuthURI);
+            String pStrFunctionURI = cStrAzureFunctionRootURL;
+            if (!pStrFunctionURI.EndsWith("/")) pStrFunctionURI += "/";
+            pStrFunctionURI += String.Format("api/{0}", iFunctionName);
+            if(iQueryParams != null && iQueryParams.Length > 0)
+            {
+                StringBuilder pSBrQuery = new StringBuilder();
+                foreach(KeyValuePair<String, String> curParam in iQueryParams)
+                {
+                    pSBrQuery.Append(String.Format("{0}={1}", curParam.Key, curParam.Value));
+                    pSBrQuery.Append("&");
+                }
+                pSBrQuery.Length -= 1;
+                pStrFunctionURI = String.Format("{0}?{1}", pStrFunctionURI, pSBrQuery.ToString());
+            }
+            return (pStrFunctionURI);
         }
 
         public async Task<Boolean> AuthenticateAsync()

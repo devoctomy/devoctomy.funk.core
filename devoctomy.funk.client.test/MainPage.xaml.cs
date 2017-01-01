@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,6 +25,13 @@ namespace devoctomy.funk.client.test
     public sealed partial class MainPage : Page
     {
 
+
+        #region private objects
+
+        private String cStrEmail = String.Empty;
+
+        #endregion
+
         #region constructor / destructor
 
         public MainPage()
@@ -40,7 +48,6 @@ namespace devoctomy.funk.client.test
             if (await App.Client.AuthenticateAsync())
             {
                 butUserInfo.IsEnabled = true;
-                butRegister.IsEnabled = true;
                 butServiceInfo.IsEnabled = true;
             }
         }
@@ -50,24 +57,44 @@ namespace devoctomy.funk.client.test
             FunkManagementGetUserInfoResponse pSIRServiceInfoResponse = await App.Client.GetUserInfoAsync();
             if (pSIRServiceInfoResponse.Success)
             {
-
+                cStrEmail = pSIRServiceInfoResponse.Response.Email;
+                butRegister.IsEnabled = !pSIRServiceInfoResponse.Response.Registered;
             }
             else
             {
-
+                butRegister.IsEnabled = false;
             }
         }
 
         private async void butRegister_Click(object sender, RoutedEventArgs e)
         {
-            FunkManagementRegisterResponse pRReRegisterResponse = await App.Client.GetRegisterAsync();
+            FunkManagementGetRegisterResponse pRReRegisterResponse = await App.Client.GetRegisterAsync();
             if (pRReRegisterResponse.Success)
             {
+                butRegister.IsEnabled = false;
 
+                MessageDialog pMDgDialog = new MessageDialog($"Please check your email @ '{cStrEmail}' for your activation code!");
+                await pMDgDialog.ShowAsync();
             }
             else
             {
+                butRegister.IsEnabled = true;
+            }
+        }
 
+        private async void butActivate_Click(object sender, RoutedEventArgs e)
+        {
+            FunkManagementGetActivateResponse pGARGetActivateResponse = await App.Client.GetActivateAsync(tbxActivationCode.Text,
+                tbxUserName.Text);
+            if(pGARGetActivateResponse.Success)
+            {
+                MessageDialog pMDgDialog = new MessageDialog("Successfully activated account!");
+                await pMDgDialog.ShowAsync();
+            }
+            else
+            {
+                MessageDialog pMDgDialog = new MessageDialog("Failed to activate account!");
+                await pMDgDialog.ShowAsync();
             }
         }
 
@@ -76,11 +103,11 @@ namespace devoctomy.funk.client.test
             FunkManagementServiceInfoResponse pSIRServiceInfoResponse = await App.Client.GetServiceInfoAsync();
             if (pSIRServiceInfoResponse.Success)
             {
-
+                //success
             }
             else
             {
-
+                //fail
             }
         }
 

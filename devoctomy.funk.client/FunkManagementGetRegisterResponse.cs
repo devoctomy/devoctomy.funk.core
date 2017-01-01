@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace devoctomy.funk.client
 {
 
-    public class FunkManagementRegisterResponse : AzureFunctionClientResponseBase<FunkServiceInfo>
+    public class FunkManagementGetRegisterResponse : AzureFunctionClientResponseBase<FunkServiceInfo>
     {
 
         #region constructor / destructor
 
-        public FunkManagementRegisterResponse(Boolean iSuccess,
+        public FunkManagementGetRegisterResponse(Boolean iSuccess,
             FunkServiceInfo iResponse) :
             base(iSuccess, iResponse)
         { }

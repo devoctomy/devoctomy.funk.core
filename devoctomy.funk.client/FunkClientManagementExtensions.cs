@@ -14,7 +14,7 @@ namespace devoctomy.funk.client
 
         #region methods
 
-        public static async Task<FunkManagementRegisterResponse> GetRegisterAsync(this FunkClient iFunkClient)
+        public static async Task<FunkManagementGetRegisterResponse> GetRegisterAsync(this FunkClient iFunkClient)
         {
             HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
                 iFunkClient.GetFunctionURI("Register"));
@@ -22,11 +22,32 @@ namespace devoctomy.funk.client
             {
                 String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
                 
-                return (new FunkManagementRegisterResponse(true, null));
+                return (new FunkManagementGetRegisterResponse(true, null));
             }
             else
             {
-                return (new FunkManagementRegisterResponse(false, null));
+                return (new FunkManagementGetRegisterResponse(false, null));
+            }
+        }
+
+        public static async Task<FunkManagementGetActivateResponse> GetActivateAsync(this FunkClient iFunkClient,
+            String iActivationCode,
+            String iUserName)
+        {
+            HttpResponseMessage pHRMResponse = await iFunkClient.AuthenticatedRequestAsync("GET",
+                iFunkClient.GetFunctionURI("ActivateAccount", new KeyValuePair<String, String>[] {
+                    new KeyValuePair<String, String>("activationcode", iActivationCode),
+                    new KeyValuePair<String, String>("username", iUserName)
+                }));
+            if (pHRMResponse.IsSuccessStatusCode)
+            {
+                String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
+                return (new FunkManagementGetActivateResponse(true, null));
+            }
+            else
+            {
+                String pStrResponse = await pHRMResponse.Content.ReadAsStringAsync();
+                return (new FunkManagementGetActivateResponse(false, null));
             }
         }
 
